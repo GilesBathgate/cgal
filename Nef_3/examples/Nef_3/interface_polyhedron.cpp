@@ -4,7 +4,8 @@
 #include <CGAL/IO/Polyhedron_iostream.h>
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/IO/Nef_polyhedron_iostream_3.h>
-#include <iostream>
+#include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 
 typedef CGAL::Homogeneous<CGAL::Exact_integer>  Kernel;
 typedef CGAL::Polyhedron_3<Kernel>  Polyhedron;
@@ -17,14 +18,13 @@ int main() {
   std::cin >> P;
   if(P.is_closed()) {
     Nef_polyhedron N1(P);
-    Nef_polyhedron N2(N1);
-    Aff_transformation_3 aff(CGAL::TRANSLATION, Vector_3(2,2,0,1));
-    N2.transform(aff);
-    N1 += N2;
 
+    Polyhedron P2;
     if(N1.is_simple()) {
-      N1.convert_to_polyhedron(P);
-      std::cout << P;
+      for(int i=0; i<1000; ++i) {
+        CGAL::convert_nef_polyhedron_to_polygon_mesh(N1,P2);
+        //CGAL::Polygon_mesh_processing::triangulate_faces(P2);
+      }
     }
     else
       std::cerr << "N1 is not a 2-manifold." << std::endl;
