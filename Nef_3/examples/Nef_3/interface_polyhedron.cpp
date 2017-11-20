@@ -24,7 +24,7 @@ int main() {
     if(N1.is_simple()) {
       for(int i=0; i<1000; ++i) {
         CGAL::convert_nef_polyhedron_to_polygon_mesh(N1,P2);
-        //CGAL::Polygon_mesh_processing::triangulate_faces(P2);
+        CGAL::Polygon_mesh_processing::triangulate_faces(P2);
       }
     }
     else
