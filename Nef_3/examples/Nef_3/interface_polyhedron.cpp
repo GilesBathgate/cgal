@@ -5,8 +5,9 @@
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/IO/Nef_polyhedron_iostream_3.h>
 #include <iostream>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-typedef CGAL::Homogeneous<CGAL::Exact_integer>  Kernel;
+typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
 typedef CGAL::Polyhedron_3<Kernel>  Polyhedron;
 typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron;
 typedef Kernel::Vector_3  Vector_3;
