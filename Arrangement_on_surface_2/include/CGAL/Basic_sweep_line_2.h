@@ -12,6 +12,10 @@
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 //
+// $URL$
+// $Id$
+// SPDX-License-Identifier: GPL-3.0+
+//
 // Author(s) : Baruch Zukerman <baruchzu@post.tau.ac.il>
 //             Efi Fogel       <efifogel@gmail.com>
 //               (based on old version by Tali Zvi)
@@ -446,8 +450,7 @@ protected:
    * \param curve The subcurve to add.
    * \return (true) if an overlap occured; (false) otherwise.
    */
-  virtual bool _add_curve_to_right(Event* event, Subcurve* curve,
-                                   bool overlap_exist = false);
+  virtual bool _add_curve_to_right(Event* event, Subcurve* curve);
 
   /*! Remove a curve from the status line. */
   void _remove_curve_from_status_line(Subcurve *leftCurve);

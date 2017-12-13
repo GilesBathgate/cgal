@@ -1,11 +1,9 @@
 project(CGAL_ipelets_Demo)
 
 cmake_minimum_required(VERSION 3.1)
-if(POLICY CMP0053)
+if(NOT POLICY CMP0070 AND POLICY CMP0053)
+  # Only set CMP0053 to OLD with CMake<3.10, otherwise there is a warning.
   cmake_policy(SET CMP0053 OLD)
-endif()
-if(POLICY CMP0043)
-  cmake_policy(SET CMP0043 OLD)
 endif()
 
 macro( remove_leading_zero var )
@@ -127,21 +125,27 @@ if ( CGAL_FOUND )
       message(STATUS "Set Ipelets install dir: ${IPELET_INSTALL_DIR}")
     endif()
 
+    include(${CGAL_MODULES_DIR}/CGAL_add_test.cmake)
+
     foreach(IPELET ${CGAL_IPELETS})
       add_library(CGAL_${IPELET} MODULE ${IPELET}.cpp)
       add_to_cached_list(CGAL_EXECUTABLE_TARGETS CGAL_${IPELET})
-      target_link_libraries(CGAL_${IPELET} ${IPE_LIBRARIES})
+      target_link_libraries(CGAL_${IPELET} PRIVATE CGAL::CGAL ${IPE_LIBRARIES})
       if ( IPELET_INSTALL_DIR )
         install(TARGETS CGAL_${IPELET} DESTINATION ${IPELET_INSTALL_DIR})
         if (WITH_IPE_7)
           install(FILES ./lua/libCGAL_${IPELET}.lua DESTINATION ${IPELET_INSTALL_DIR}) #only for ipe 7
         endif()
       endif ()
+      cgal_add_compilation_test(CGAL_${IPELET})
     endforeach(IPELET)
+    target_link_libraries(CGAL_cone_spanners PRIVATE CGAL::CGAL_Core)
     #example in doc not installed
     add_library(simple_triangulation MODULE simple_triangulation.cpp)
     add_to_cached_list(CGAL_EXECUTABLE_TARGETS simple_triangulation)
     target_link_libraries(simple_triangulation ${IPE_LIBRARIES})
+
+    cgal_add_compilation_test(simple_triangulation)
 
   else()
     message(STATUS "NOTICE: This program requires the Ipe include files and library, and will not be compiled.")

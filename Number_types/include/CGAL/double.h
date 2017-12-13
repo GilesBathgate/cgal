@@ -18,6 +18,7 @@
 //
 // $URL$
 // $Id$
+// SPDX-License-Identifier: LGPL-3.0+
 //
 //
 // Author(s)     : Geert-Jan Giezeman, Michael Hemmer
@@ -138,8 +139,7 @@ inline double sse2fabs(double a)
   __m128d temp = _mm_set1_pd(a);
   
   temp = _mm_and_pd(temp, absMask.m);
-  _mm_store_sd(&a, temp);
-  return a;
+  return _mm_cvtsd_f64 (temp);
 }
 
 #endif

@@ -11,6 +11,10 @@
 // Licensees holding a valid commercial license may use this file in
 // accordance with the commercial license agreement provided with the software.
 //
+// $URL$
+// $Id$
+// SPDX-License-Identifier: GPL-3.0+
+//
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 //
@@ -18,6 +22,7 @@
 
 #ifndef CGAL_SURFACE_MESH_H
 #define CGAL_SURFACE_MESH_H
+
 
 #include <CGAL/license/Surface_mesh.h>
 
@@ -2620,9 +2625,14 @@ namespace internal{
 }
 
 } // CGAL
+ 
+#ifndef DOXYGEN_RUNNING
 
 namespace std {
 
+
+  struct TTTTTffff {};
+    
 #if defined(BOOST_MSVC)
 #  pragma warning(push)
 #  pragma warning(disable:4099) // For VC10 it is class hash 
@@ -2687,6 +2697,8 @@ namespace boost {
   };
 
 } // namespace boost
+
+#endif // DOXYGEN_RUNNING
 
 #endif /* CGAL_SURFACE_MESH_H */
 
