@@ -14,6 +14,7 @@
 //
 // $URL$
 // $Id$
+// SPDX-License-Identifier: GPL-3.0+
 // 
 //
 // Author(s)     : Baruch Zukerman <baruchzu@post.tau.ac.il>
@@ -107,7 +108,8 @@ public:
                                OutputIterator oi)
     {
       if(cv1.halfedge_handle() != invalid_he &&
-         cv2.halfedge_handle() != invalid_he)
+         cv2.halfedge_handle() != invalid_he &&
+         cv1.halfedge_handle()!=cv2.halfedge_handle())
       {
         // The curves are interior-disjoint as both of them are already in
         //  the arrangement.

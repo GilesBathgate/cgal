@@ -640,7 +640,7 @@ void Scene_polyhedron_selection_item::draw(CGAL::Three::Viewer_interface* viewer
 
   viewer->glGetFloatv(GL_POLYGON_OFFSET_FACTOR, &offset_factor);
   viewer->glGetFloatv(GL_POLYGON_OFFSET_UNITS, &offset_units);
-  glPolygonOffset(0.5f, 0.9f);
+  viewer->glPolygonOffset(0.5f, 0.9f);
   vaos[Scene_polyhedron_selection_item_priv::HLFacets]->bind();
   d->program = getShaderProgram(PROGRAM_WITH_LIGHT);
   attribBuffers(viewer,PROGRAM_WITH_LIGHT);
@@ -693,13 +693,13 @@ void Scene_polyhedron_selection_item::draw(CGAL::Three::Viewer_interface* viewer
   d->program->release();
   vaos[Scene_polyhedron_selection_item_priv::Facets]->release();
 
-  glEnable(GL_POLYGON_OFFSET_LINE);
+  viewer->glEnable(GL_POLYGON_OFFSET_LINE);
   viewer->glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-  glPolygonOffset(0.0f, 1.5f);
+  viewer->glPolygonOffset(0.0f, 1.5f);
   drawEdges(viewer);
-  glDisable(GL_POLYGON_OFFSET_LINE);
+  viewer->glDisable(GL_POLYGON_OFFSET_LINE);
   viewer->glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
-  glPolygonOffset(offset_factor, offset_units);
+  viewer->glPolygonOffset(offset_factor, offset_units);
   drawPoints(viewer);
   viewer->glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 }
@@ -1629,13 +1629,20 @@ void Scene_polyhedron_selection_item_priv::computeAndDisplayPath()
   path.append(vop);
 
   // Display path
+  double path_length = 0;
   QList<vertex_on_path>::iterator path_it;
   for(path_it = path.begin(); path_it!=path.end()-1; ++path_it)
   {
     std::pair<fg_halfedge_descriptor, bool> h = halfedge((path_it+1)->vertex,path_it->vertex,*item->polyhedron());
     if(h.second)
+    {
+      VPmap vpm = get(CGAL::vertex_point,*polyhedron());
+      Point p1(get(vpm, (path_it+1)->vertex)), p2(get(vpm, path_it->vertex));
+          path_length += CGAL::sqrt(Vector(p1,p2).squared_length());
       item->temp_selected_edges.insert(edge(h.first, *item->polyhedron()));
+    }
   }
+  item->printMessage(QString("New path length: %1").arg(path_length));
 }
 
 void Scene_polyhedron_selection_item_priv::addVertexToPath(fg_vertex_descriptor vh, vertex_on_path &first)
@@ -2115,7 +2122,7 @@ void Scene_polyhedron_selection_item::clearHL()
 }
 void Scene_polyhedron_selection_item::selected_HL(const std::set<fg_vertex_descriptor>& m)
 {
-  HL_selected_edges.clear();
+//  HL_selected_edges.clear();
   HL_selected_facets.clear();
   HL_selected_vertices.clear();
   HL_selected_vertices.insert(*m.begin());
