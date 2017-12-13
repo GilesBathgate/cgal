@@ -4,6 +4,9 @@
 #include <CGAL/IO/Polyhedron_iostream.h>
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/IO/Nef_polyhedron_iostream_3.h>
+#include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <fstream>
 #include <iostream>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <math.h>
@@ -18,10 +21,10 @@ typedef Kernel::FT Scalar;
 typedef Polyhedron::Facet_const_iterator FacetIterator;
 typedef Polyhedron::Halfedge_around_facet_const_circulator HalffacetCirculator;
 
-void exportAsciiSTL(Polyhedron poly)
+void exportAsciiSTL(Polyhedron poly, std::ostream& output)
 {
 
-        std::cout << "solid stl\n";
+        output << "solid stl\n";
 
         for(FacetIterator fi=poly.facets_begin(); fi!=poly.facets_end(); ++fi) {
                 HalffacetCirculator hc=fi->facet_begin();
@@ -48,31 +51,72 @@ void exportAsciiSTL(Polyhedron poly)
                 float ny=CGAL::to_double(un.y());
                 float nz=CGAL::to_double(un.z());
 
-                std::cout << "  facet normal " << nx << " " << ny << " " << nz << "\n";
-                std::cout << "    outer loop\n";
-                std::cout << "      vertex " << x1 << " " << y1 << " " << z1 << "\n";
-                std::cout << "      vertex " << x2 << " " << y2 << " " << z2 << "\n";
-                std::cout << "      vertex " << x3 << " " << y3 << " " << z3 << "\n";
-                std::cout << "    endloop\n";
-                std::cout << "  endfacet\n";
+                output << "  facet normal " << nx << " " << ny << " " << nz << "\n";
+                output << "    outer loop\n";
+                output << "      vertex " << x1 << " " << y1 << " " << z1 << "\n";
+                output << "      vertex " << x2 << " " << y2 << " " << z2 << "\n";
+                output << "      vertex " << x3 << " " << y3 << " " << z3 << "\n";
+                output << "    endloop\n";
+                output << "  endfacet\n";
         }
-
-        std::cout << "endsolid stl\n";
+        output << "endsolid stl\n";
 }
 
-int main() {
-  Polyhedron P;
-  std::cin >> P;
-  if(P.is_closed()) {
-    Nef_polyhedron N1(P);
+int main(int argc, char** argv)
+{
+	int N=10000;
 
-    if(N1.is_simple()) {
-      Polyhedron P2;
-      //for(int i=0; i<1000; ++i)
-        N1.convert_to_polyhedron(P2);
-      exportAsciiSTL(P2);
-    }
-    else
-      std::cerr << "N1 is not a 2-manifold." << std::endl;
-  }
+	if(argc>1)
+		N=atoi(argv[1]);
+
+	// create two nested cubes
+	Polyhedron poly_in;
+	std::ifstream input("cube.off");
+	input >> poly_in;
+
+	const Nef_polyhedron nef(poly_in);
+
+	CGAL::Timer timer;
+	timer.start();
+	for(int i=0; i<N; ++i) {
+		Polyhedron poly_out;
+		CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, poly_out);
+                CGAL::Polygon_mesh_processing::triangulate_faces(poly_out);
+		if(poly_out.size_of_vertices()!=poly_in.size_of_vertices())
+			std::cerr <<"ERROR1\n";
+	}
+	timer.stop();
+	std::cout << "convert_nef_polyhedron_to_polygon_mesh " << timer.time() << "\n";
+
+        {
+		Polyhedron poly_out;
+		CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, poly_out);
+                CGAL::Polygon_mesh_processing::triangulate_faces(poly_out);
+                std::ofstream output("cube1.stl");
+                exportAsciiSTL(poly_out,output);
+                output.close();	
+        }
+
+
+	timer.reset();
+	timer.start();
+	for(int i=0; i<N; ++i) {
+		Polyhedron poly_out;
+		nef.convert_to_polyhedron(poly_out);
+		if(poly_out.size_of_vertices()!=poly_in.size_of_vertices())
+			std::cerr <<"ERROR2\n";
+	}
+	timer.stop();
+	std::cout << "convert_to_polyhedron " << timer.time() << "\n";
+
+        {
+		Polyhedron poly_out;
+		nef.convert_to_polyhedron(poly_out);
+                std::ofstream output("cube2.stl");
+                exportAsciiSTL(poly_out,output);
+                output.close();	
+        }
+
+	return 0;
+
 }
