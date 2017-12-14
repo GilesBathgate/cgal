@@ -36,6 +36,7 @@ int main(int argc, char** argv)
 	const Nef_polyhedron nef(poly_in);
 
 	CGAL::Timer timer;
+       timer.reset();
 	timer.start();
 	for(int i=0; i<N; ++i) {
 		Polyhedron poly_out;
