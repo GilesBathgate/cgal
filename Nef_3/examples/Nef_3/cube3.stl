@@ -1,99 +1,15 @@
 solid stl
   facet normal -0 -0 -1
     outer loop
+      vertex -4.6194 1.91342 10
+      vertex -3.53553 3.53553 10
+      vertex -10 10 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
       vertex 10 -10 10
-      vertex 10 10 10
-      vertex 5 0 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex 10 10 10
-      vertex 4.6194 1.91342 10
-      vertex 5 0 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex 4.6194 1.91342 10
-      vertex 10 10 10
-      vertex 3.53553 3.53553 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex 3.53553 3.53553 10
-      vertex 10 10 10
-      vertex 1.91342 4.6194 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex 1.91342 4.6194 10
-      vertex 10 10 10
-      vertex 5e-16 5 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex 5e-16 5 10
-      vertex 10 10 10
-      vertex -10 10 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex 5e-16 5 10
-      vertex -10 10 10
-      vertex -1.91342 4.6194 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex -3.53553 3.53553 10
-      vertex -1.91342 4.6194 10
-      vertex -10 10 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex -4.6194 1.91342 10
-      vertex -3.53553 3.53553 10
-      vertex -10 10 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex -5 5e-16 10
-      vertex -4.6194 1.91342 10
-      vertex -10 10 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex -10 -10 10
-      vertex -5 5e-16 10
-      vertex -10 10 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex -4.6194 -1.91342 10
-      vertex -5 5e-16 10
-      vertex -10 -10 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex -3.53553 -3.53553 10
-      vertex -4.6194 -1.91342 10
-      vertex -10 -10 10
-    endloop
-  endfacet
-  facet normal -0 -0 -1
-    outer loop
-      vertex -1.91342 -4.6194 10
-      vertex -3.53553 -3.53553 10
+      vertex -1e-15 -5 10
       vertex -10 -10 10
     endloop
   endfacet
@@ -106,30 +22,86 @@ solid stl
   endfacet
   facet normal -0 -0 -1
     outer loop
-      vertex 10 -10 10
-      vertex -1e-15 -5 10
+      vertex -5 5e-16 10
+      vertex -10 10 10
       vertex -10 -10 10
     endloop
   endfacet
   facet normal -0 -0 -1
     outer loop
-      vertex 1.91342 -4.6194 10
-      vertex -1e-15 -5 10
-      vertex 10 -10 10
+      vertex -1.91342 -4.6194 10
+      vertex -3.53553 -3.53553 10
+      vertex -10 -10 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex -4.6194 -1.91342 10
+      vertex -5 5e-16 10
+      vertex -10 -10 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex -4.6194 1.91342 10
+      vertex -10 10 10
+      vertex -5 5e-16 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex -3.53553 3.53553 10
+      vertex -1.91342 4.6194 10
+      vertex -10 10 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 1.91342 4.6194 10
+      vertex 10 10 10
+      vertex 5e-16 5 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex -1.91342 4.6194 10
+      vertex 10 10 10
+      vertex -10 10 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 10 10 10
+      vertex -1.91342 4.6194 10
+      vertex 5e-16 5 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 3.53553 3.53553 10
+      vertex 10 10 10
+      vertex 1.91342 4.6194 10
     endloop
   endfacet
   facet normal -0 -0 -1
     outer loop
       vertex 10 -10 10
-      vertex 3.53553 -3.53553 10
-      vertex 1.91342 -4.6194 10
+      vertex 10 10 10
+      vertex 4.6194 1.91342 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 4.6194 1.91342 10
+      vertex 10 10 10
+      vertex 3.53553 3.53553 10
     endloop
   endfacet
   facet normal -0 -0 -1
     outer loop
       vertex 10 -10 10
-      vertex 4.6194 -1.91342 10
-      vertex 3.53553 -3.53553 10
+      vertex 4.6194 1.91342 10
+      vertex 5 0 10
     endloop
   endfacet
   facet normal -0 -0 -1
@@ -137,48 +109,76 @@ solid stl
       vertex 10 -10 10
       vertex 5 0 10
       vertex 4.6194 -1.91342 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 10 -10 10
+      vertex 4.6194 -1.91342 10
+      vertex 3.53553 -3.53553 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 10 -10 10
+      vertex 3.53553 -3.53553 10
+      vertex 1.91342 -4.6194 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 10 -10 10
+      vertex 1.91342 -4.6194 10
+      vertex -1e-15 -5 10
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex -3.53553 -3.53553 10
+      vertex -4.6194 -1.91342 10
+      vertex -10 -10 10
     endloop
   endfacet
   facet normal -0 1 -0
     outer loop
       vertex 10 -10 -10
       vertex 10 -10 10
-      vertex -10 -10 -10
+      vertex -10 -10 10
     endloop
   endfacet
   facet normal -0 1 -0
     outer loop
-      vertex -10 -10 -10
-      vertex 10 -10 10
+      vertex 10 -10 -10
       vertex -10 -10 10
-    endloop
-  endfacet
-  facet normal 1 -0 -0
-    outer loop
-      vertex -10 -10 10
-      vertex -10 10 10
       vertex -10 -10 -10
     endloop
   endfacet
   facet normal 1 -0 -0
     outer loop
+      vertex -10 10 -10
       vertex -10 -10 -10
+      vertex -10 -10 10
+    endloop
+  endfacet
+  facet normal 1 -0 -0
+    outer loop
       vertex -10 10 10
       vertex -10 10 -10
+      vertex -10 -10 10
     endloop
   endfacet
   facet normal -0 -1 -0
     outer loop
+      vertex 10 10 -10
+      vertex -10 10 -10
       vertex -10 10 10
+    endloop
+  endfacet
+  facet normal -0 -1 -0
+    outer loop
       vertex 10 10 10
       vertex 10 10 -10
-    endloop
-  endfacet
-  facet normal -0 -1 -0
-    outer loop
       vertex -10 10 10
-      vertex 10 10 -10
-      vertex -10 10 -10
     endloop
   endfacet
   facet normal -1 -0 -0
@@ -199,14 +199,14 @@ solid stl
     outer loop
       vertex -4.6194 1.91342 -10
       vertex -4.6194 1.91342 10
-      vertex -5 5e-16 -10
+      vertex -5 5e-16 10
     endloop
   endfacet
-  facet normal -0.980786 0.195089 0
+  facet normal -0.980786 0.195089 -0
     outer loop
-      vertex -5 5e-16 -10
-      vertex -4.6194 1.91342 10
+      vertex -4.6194 1.91342 -10
       vertex -5 5e-16 10
+      vertex -5 5e-16 -10
     endloop
   endfacet
   facet normal -0.980786 -0.195089 -0
@@ -239,205 +239,289 @@ solid stl
   endfacet
   facet normal -0.555574 -0.831467 -0
     outer loop
-      vertex -3.53553 -3.53553 10
-      vertex -1.91342 -4.6194 10
-      vertex -1.91342 -4.6194 -10
-    endloop
-  endfacet
-  facet normal -0.555574 -0.831467 0
-    outer loop
-      vertex -3.53553 -3.53553 10
       vertex -1.91342 -4.6194 -10
       vertex -3.53553 -3.53553 -10
+      vertex -3.53553 -3.53553 10
+    endloop
+  endfacet
+  facet normal -0.555574 -0.831467 -0
+    outer loop
+      vertex -1.91342 -4.6194 10
+      vertex -1.91342 -4.6194 -10
+      vertex -3.53553 -3.53553 10
     endloop
   endfacet
   facet normal -0.195089 -0.980786 -0
     outer loop
-      vertex -1.91342 -4.6194 10
-      vertex -1e-15 -5 10
-      vertex -1e-15 -5 -10
-    endloop
-  endfacet
-  facet normal -0.195089 -0.980786 0
-    outer loop
-      vertex -1.91342 -4.6194 10
       vertex -1e-15 -5 -10
       vertex -1.91342 -4.6194 -10
+      vertex -1.91342 -4.6194 10
+    endloop
+  endfacet
+  facet normal -0.195089 -0.980786 -0
+    outer loop
+      vertex -1e-15 -5 10
+      vertex -1e-15 -5 -10
+      vertex -1.91342 -4.6194 10
     endloop
   endfacet
   facet normal 0.195089 -0.980786 -0
     outer loop
-      vertex -1e-15 -5 10
-      vertex 1.91342 -4.6194 10
-      vertex 1.91342 -4.6194 -10
-    endloop
-  endfacet
-  facet normal 0.195089 -0.980786 0
-    outer loop
-      vertex -1e-15 -5 10
       vertex 1.91342 -4.6194 -10
       vertex -1e-15 -5 -10
+      vertex -1e-15 -5 10
+    endloop
+  endfacet
+  facet normal 0.195089 -0.980786 -0
+    outer loop
+      vertex 1.91342 -4.6194 10
+      vertex 1.91342 -4.6194 -10
+      vertex -1e-15 -5 10
     endloop
   endfacet
   facet normal 0.555574 -0.831467 -0
     outer loop
-      vertex 1.91342 -4.6194 10
-      vertex 3.53553 -3.53553 10
-      vertex 3.53553 -3.53553 -10
-    endloop
-  endfacet
-  facet normal 0.555574 -0.831467 0
-    outer loop
-      vertex 1.91342 -4.6194 10
       vertex 3.53553 -3.53553 -10
       vertex 1.91342 -4.6194 -10
+      vertex 1.91342 -4.6194 10
+    endloop
+  endfacet
+  facet normal 0.555574 -0.831467 -0
+    outer loop
+      vertex 3.53553 -3.53553 10
+      vertex 3.53553 -3.53553 -10
+      vertex 1.91342 -4.6194 10
     endloop
   endfacet
   facet normal 0.831467 -0.555574 -0
     outer loop
-      vertex 3.53553 -3.53553 10
-      vertex 4.6194 -1.91342 10
-      vertex 4.6194 -1.91342 -10
-    endloop
-  endfacet
-  facet normal 0.831467 -0.555574 0
-    outer loop
-      vertex 3.53553 -3.53553 10
       vertex 4.6194 -1.91342 -10
       vertex 3.53553 -3.53553 -10
+      vertex 3.53553 -3.53553 10
+    endloop
+  endfacet
+  facet normal 0.831467 -0.555574 -0
+    outer loop
+      vertex 4.6194 -1.91342 10
+      vertex 4.6194 -1.91342 -10
+      vertex 3.53553 -3.53553 10
     endloop
   endfacet
   facet normal 0.980786 -0.195089 -0
     outer loop
-      vertex 4.6194 -1.91342 10
-      vertex 5 0 10
-      vertex 5 0 -10
-    endloop
-  endfacet
-  facet normal 0.980786 -0.195089 0
-    outer loop
-      vertex 4.6194 -1.91342 10
       vertex 5 0 -10
       vertex 4.6194 -1.91342 -10
+      vertex 4.6194 -1.91342 10
+    endloop
+  endfacet
+  facet normal 0.980786 -0.195089 -0
+    outer loop
+      vertex 5 0 10
+      vertex 5 0 -10
+      vertex 4.6194 -1.91342 10
     endloop
   endfacet
   facet normal 0.980786 0.195089 -0
     outer loop
-      vertex 5 0 -10
-      vertex 5 0 10
+      vertex 4.6194 1.91342 10
       vertex 4.6194 1.91342 -10
+      vertex 5 0 -10
     endloop
   endfacet
   facet normal 0.980786 0.195089 0
     outer loop
-      vertex 4.6194 1.91342 -10
       vertex 5 0 10
       vertex 4.6194 1.91342 10
+      vertex 5 0 -10
     endloop
   endfacet
   facet normal 0.831467 0.555574 -0
     outer loop
-      vertex 4.6194 1.91342 -10
-      vertex 4.6194 1.91342 10
+      vertex 3.53553 3.53553 10
       vertex 3.53553 3.53553 -10
+      vertex 4.6194 1.91342 -10
     endloop
   endfacet
   facet normal 0.831467 0.555574 0
     outer loop
-      vertex 3.53553 3.53553 -10
       vertex 4.6194 1.91342 10
       vertex 3.53553 3.53553 10
+      vertex 4.6194 1.91342 -10
     endloop
   endfacet
   facet normal 0.555574 0.831467 -0
     outer loop
       vertex 3.53553 3.53553 -10
       vertex 3.53553 3.53553 10
-      vertex 1.91342 4.6194 -10
+      vertex 1.91342 4.6194 10
     endloop
   endfacet
-  facet normal 0.555574 0.831467 0
+  facet normal 0.555574 0.831467 -0
     outer loop
-      vertex 1.91342 4.6194 -10
-      vertex 3.53553 3.53553 10
+      vertex 3.53553 3.53553 -10
       vertex 1.91342 4.6194 10
+      vertex 1.91342 4.6194 -10
     endloop
   endfacet
   facet normal 0.195089 0.980786 -0
     outer loop
       vertex 1.91342 4.6194 -10
       vertex 1.91342 4.6194 10
-      vertex 5e-16 5 -10
+      vertex 5e-16 5 10
     endloop
   endfacet
-  facet normal 0.195089 0.980786 0
+  facet normal 0.195089 0.980786 -0
     outer loop
-      vertex 5e-16 5 -10
-      vertex 1.91342 4.6194 10
+      vertex 1.91342 4.6194 -10
       vertex 5e-16 5 10
+      vertex 5e-16 5 -10
     endloop
   endfacet
   facet normal -0.195089 0.980786 -0
     outer loop
       vertex 5e-16 5 -10
       vertex 5e-16 5 10
-      vertex -1.91342 4.6194 -10
+      vertex -1.91342 4.6194 10
     endloop
   endfacet
-  facet normal -0.195089 0.980786 0
+  facet normal -0.195089 0.980786 -0
     outer loop
-      vertex -1.91342 4.6194 -10
-      vertex 5e-16 5 10
+      vertex 5e-16 5 -10
       vertex -1.91342 4.6194 10
+      vertex -1.91342 4.6194 -10
     endloop
   endfacet
   facet normal -0.555574 0.831467 -0
     outer loop
       vertex -1.91342 4.6194 -10
       vertex -1.91342 4.6194 10
-      vertex -3.53553 3.53553 -10
+      vertex -3.53553 3.53553 10
     endloop
   endfacet
-  facet normal -0.555574 0.831467 0
+  facet normal -0.555574 0.831467 -0
     outer loop
-      vertex -3.53553 3.53553 -10
-      vertex -1.91342 4.6194 10
+      vertex -1.91342 4.6194 -10
       vertex -3.53553 3.53553 10
+      vertex -3.53553 3.53553 -10
     endloop
   endfacet
   facet normal -0.831467 0.555574 -0
     outer loop
       vertex -3.53553 3.53553 -10
       vertex -3.53553 3.53553 10
-      vertex -4.6194 1.91342 -10
-    endloop
-  endfacet
-  facet normal -0.831467 0.555574 0
-    outer loop
-      vertex -4.6194 1.91342 -10
-      vertex -3.53553 3.53553 10
       vertex -4.6194 1.91342 10
     endloop
   endfacet
+  facet normal -0.831467 0.555574 -0
+    outer loop
+      vertex -3.53553 3.53553 -10
+      vertex -4.6194 1.91342 10
+      vertex -4.6194 1.91342 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex 4.6194 -1.91342 -10
+      vertex 10 -10 -10
+      vertex 3.53553 -3.53553 -10
+    endloop
+  endfacet
   facet normal -0 -0 1
     outer loop
       vertex 10 10 -10
-      vertex 5e-16 5 -10
+      vertex 1.91342 4.6194 -10
       vertex -10 10 -10
     endloop
   endfacet
   facet normal -0 -0 1
     outer loop
-      vertex 1.91342 4.6194 -10
-      vertex 5e-16 5 -10
-      vertex 10 10 -10
+      vertex -5 5e-16 -10
+      vertex -10 -10 -10
+      vertex -10 10 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -4.6194 1.91342 -10
+      vertex -5 5e-16 -10
+      vertex -10 10 -10
     endloop
   endfacet
   facet normal -0 -0 1
     outer loop
       vertex 10 10 -10
-      vertex 3.53553 3.53553 -10
-      vertex 1.91342 4.6194 -10
+      vertex 10 -10 -10
+      vertex 4.6194 -1.91342 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -4.6194 -1.91342 -10
+      vertex -10 -10 -10
+      vertex -5 5e-16 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex 10 10 -10
+      vertex 5 0 -10
+      vertex 4.6194 1.91342 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -3.53553 -3.53553 -10
+      vertex -10 -10 -10
+      vertex -4.6194 -1.91342 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -1.91342 -4.6194 -10
+      vertex -10 -10 -10
+      vertex -3.53553 -3.53553 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex 10 -10 -10
+      vertex -10 -10 -10
+      vertex -1.91342 -4.6194 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -1.91342 -4.6194 -10
+      vertex -1e-15 -5 -10
+      vertex 10 -10 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -1e-15 -5 -10
+      vertex 1.91342 -4.6194 -10
+      vertex 10 -10 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex 1.91342 -4.6194 -10
+      vertex 3.53553 -3.53553 -10
+      vertex 10 -10 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -3.53553 3.53553 -10
+      vertex -4.6194 1.91342 -10
+      vertex -10 10 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex 4.6194 -1.91342 -10
+      vertex 5 0 -10
+      vertex 10 10 -10
     endloop
   endfacet
   facet normal -0 -0 1
@@ -450,105 +534,14 @@ solid stl
   facet normal -0 -0 1
     outer loop
       vertex 10 10 -10
-      vertex 5 0 -10
-      vertex 4.6194 1.91342 -10
+      vertex 3.53553 3.53553 -10
+      vertex 1.91342 4.6194 -10
     endloop
   endfacet
   facet normal -0 -0 1
     outer loop
-      vertex 10 10 -10
-      vertex 10 -10 -10
-      vertex 5 0 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex 10 -10 -10
-      vertex 4.6194 -1.91342 -10
-      vertex 5 0 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex 4.6194 -1.91342 -10
-      vertex 10 -10 -10
-      vertex 3.53553 -3.53553 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex 3.53553 -3.53553 -10
-      vertex 10 -10 -10
-      vertex 1.91342 -4.6194 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex 1.91342 -4.6194 -10
-      vertex 10 -10 -10
-      vertex -1e-15 -5 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -1e-15 -5 -10
-      vertex 10 -10 -10
-      vertex -10 -10 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -1e-15 -5 -10
-      vertex -10 -10 -10
-      vertex -1.91342 -4.6194 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -3.53553 -3.53553 -10
-      vertex -1.91342 -4.6194 -10
-      vertex -10 -10 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -4.6194 -1.91342 -10
-      vertex -3.53553 -3.53553 -10
-      vertex -10 -10 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -5 5e-16 -10
-      vertex -4.6194 -1.91342 -10
-      vertex -10 -10 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -10 10 -10
-      vertex -5 5e-16 -10
-      vertex -10 -10 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -4.6194 1.91342 -10
-      vertex -5 5e-16 -10
-      vertex -10 10 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -3.53553 3.53553 -10
-      vertex -4.6194 1.91342 -10
-      vertex -10 10 -10
-    endloop
-  endfacet
-  facet normal -0 -0 1
-    outer loop
-      vertex -1.91342 4.6194 -10
-      vertex -3.53553 3.53553 -10
+      vertex 1.91342 4.6194 -10
+      vertex 5e-16 5 -10
       vertex -10 10 -10
     endloop
   endfacet
@@ -556,6 +549,13 @@ solid stl
     outer loop
       vertex 5e-16 5 -10
       vertex -1.91342 4.6194 -10
+      vertex -10 10 -10
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex -1.91342 4.6194 -10
+      vertex -3.53553 3.53553 -10
       vertex -10 10 -10
     endloop
   endfacet

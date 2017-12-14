@@ -96,6 +96,26 @@ int main(int argc, char** argv)
                 exportAsciiSTL(poly_out,output);
                 output.close();	
         }
+	
+       timer.reset();
+       timer.start();
+	for(int i=0; i<N; ++i) {
+		Polyhedron poly_out;
+		CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, poly_out,true);
+		if(poly_out.size_of_vertices()!=poly_in.size_of_vertices())
+			std::cerr <<"ERROR1\n";
+	}
+	timer.stop();
+	std::cout << "convert_nef_polyhedron_to_polygon_mesh(true) " << timer.time() << "\n";
+
+        {
+		Polyhedron poly_out;
+		CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, poly_out,true);
+                std::ofstream output("cube2.stl");
+                exportAsciiSTL(poly_out,output);
+                output.close();	
+        }
+
 
 
 	timer.reset();
@@ -112,7 +132,7 @@ int main(int argc, char** argv)
         {
 		Polyhedron poly_out;
 		nef.convert_to_polyhedron(poly_out);
-                std::ofstream output("cube2.stl");
+                std::ofstream output("cube3.stl");
                 exportAsciiSTL(poly_out,output);
                 output.close();	
         }
