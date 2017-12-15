@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
 	// create two nested cubes
 	Polyhedron poly_in;
-	std::ifstream input("test.off");
+	std::ifstream input("cube.off");
 	input >> poly_in;
 
 	const Nef_polyhedron nef(poly_in);
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 	{
 		Polyhedron poly_out;
 		CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, poly_out);
-		std::ofstream output("test1.stl");
+		std::ofstream output("cube1.stl");
 		exportAsciiSTL(poly_out,output);
 		output.close();
 	}
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 		Polyhedron poly_out;
 		CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, poly_out);
 		CGAL::Polygon_mesh_processing::triangulate_faces(poly_out);
-		std::ofstream output("test2.stl");
+		std::ofstream output("cube2.stl");
 		exportAsciiSTL(poly_out,output);
 		output.close();
 	}
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
 	{
 		Polyhedron poly_out;
 		CGAL::convert_nef_polyhedron_to_polygon_mesh(nef, poly_out,true);
-		std::ofstream output("test3.stl");
+		std::ofstream output("cube3.stl");
 		exportAsciiSTL(poly_out,output);
 		output.close();
 	}
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
 	{
 		Polyhedron poly_out;
 		nef.convert_to_polyhedron(poly_out);
-		std::ofstream output("test4.stl");
+		std::ofstream output("cube4.stl");
 		exportAsciiSTL(poly_out,output);
 		output.close();
 	}
