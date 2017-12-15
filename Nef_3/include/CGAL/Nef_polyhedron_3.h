@@ -819,31 +819,47 @@ protected:
                   th.handle_triangles(B, VI);
               } else
                   CGAL_error_msg( "wrong value");
+          } else if(s == 4) {
+              SHalfedge_const_handle se(f->facet_cycles_begin());
+              CGAL_assertion(se != 0);
+              SHalfedge_around_facet_const_circulator hc(se);
+              Vertex_const_handle cv0 = (  hc)->source()->center_vertex();
+              Vertex_const_handle cv1 = (++hc)->source()->center_vertex();
+              Vertex_const_handle cv2 = (++hc)->source()->center_vertex();
+              Vertex_const_handle cv3 = (++hc)->source()->center_vertex();
+              int i0=VI[cv0],i1=VI[cv1],i2=VI[cv2],i3=VI[cv3];
+              Point_3 p0=cv0->point(),p1=cv1->point(),p2=cv2->point(),p3=cv3->point();
+              Vector_3 v1 = p0-p1,v2 = p1-p2,v3 = p2-p3,v4 = p3-p0;
+              if(CGAL::cross_product(v2,v3) * CGAL::cross_product(v4,v1)
+               < CGAL::cross_product(v1,v2) * CGAL::cross_product(v3,v4))
+              {
+                  build_triangle(i0,i1,i2);
+                  build_triangle(i0,i2,i3);
+              } else {
+                  build_triangle(i0,i1,i3);
+                  build_triangle(i3,i1,i2);
+              }
           } else {
               B.begin_facet();
-              Halffacet_cycle_const_iterator fc = f->facet_cycles_begin();
-              SHalfedge_const_handle se(fc);
+              SHalfedge_const_handle se(f->facet_cycles_begin());
               CGAL_assertion(se != 0);
               SHalfedge_around_facet_const_circulator hc(se),he(hc);
-              int t = 0, fv;
               CGAL_For_all(hc,he) {
                   Vertex_const_handle cv = hc->source()->center_vertex();
                   CGAL_NEF_TRACEN("   add vertex " << cv->point());
-                  int i=VI[cv];
-                  B.add_vertex_to_facet(i);
-                  if(s==4) {
-                      if(t==0) fv=i;
-                      if(++t==3) {
-                        B.end_facet();
-                        B.begin_facet();
-                        B.add_vertex_to_facet(i);
-                      }
-                  }
+                  B.add_vertex_to_facet(VI[cv]);
               }
-              if(s==4)
-                  B.add_vertex_to_facet(fv);
               B.end_facet();
           }
+      }
+
+      inline void build_triangle(int i0,int i1,int i2)
+      {
+           B.begin_facet();
+           B.add_vertex_to_facet(i0);
+           B.add_vertex_to_facet(i1);
+           B.add_vertex_to_facet(i2);
+           B.end_facet();
       }
 
       inline int sides(Halffacet_const_handle f)
