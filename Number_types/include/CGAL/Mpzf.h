@@ -265,7 +265,6 @@ struct Mpzf {
   typedef int Exponent_type;
   typedef int Size_type;
 
-  struct allocate{};
   struct noalloc{};
 
   void init(unsigned mini=2){
@@ -300,8 +299,11 @@ struct Mpzf {
     pool::push(data());
   }
 
+  // A non allocating constructor which
+  // intentionally doesn't initialize any
+  // members
+  // coverity[uninit_member]
   Mpzf(noalloc){}
-  Mpzf(allocate,int i) { init(i); }
 
   public:
 
@@ -586,7 +588,7 @@ struct Mpzf {
   }
   private:
   static Mpzf aors(Mpzf const&a, Mpzf const&b, int bsize){
-    Mpzf res=noalloc();
+    Mpzf res = noalloc();
     if(bsize==0){
       int size=std::abs(a.size);
       res.init(size);
@@ -744,7 +746,8 @@ struct Mpzf {
     int asize=std::abs(a.size);
     int bsize=std::abs(b.size);
     int siz=asize+bsize;
-    Mpzf res(allocate(),siz);
+    Mpzf res = noalloc();
+    res.init(siz);
     if(asize==0||bsize==0){res.exp=0;res.size=0;return res;}
     res.exp=a.exp+b.exp;
     mp_limb_t high;
@@ -761,7 +764,8 @@ struct Mpzf {
   friend Mpzf Mpzf_square(Mpzf const&a){
     int asize=std::abs(a.size);
     int siz=2*asize;
-    Mpzf res(allocate(),siz);
+    Mpzf res = noalloc();
+    res.init(siz);
     res.exp=2*a.exp;
     if(asize==0){res.size=0;return res;}
     mpn_sqr(res.data(),a.data(),asize);
@@ -777,7 +781,8 @@ struct Mpzf {
     int asize=std::abs(a.size);
     int bsize=std::abs(b.size);
     int siz=asize+2-bsize;
-    Mpzf res(allocate(),asize+2);
+    Mpzf res = noalloc();
+    res.init(asize+2);
     if(bsize==0){throw std::range_error("Division by zero");}
     if(asize==0){res.exp=0;res.size=0;return res;}
     res.size=siz;
@@ -804,7 +809,8 @@ struct Mpzf {
     }
     else{
       --res.exp;
-      Mpzf a2(allocate(),asize+1);
+      Mpzf a2 = noalloc();
+      a2.init(asize+1);
       a2.data()[0]=0;
       mpn_copyi(a2.data()+1,a.data(),asize);
       // No need to complete a2, we just want the buffer.
@@ -831,8 +837,10 @@ struct Mpzf {
     int atz=Mpzf_impl::ctz(a.data()[0]);
     int btz=Mpzf_impl::ctz(b.data()[0]);
     int rtz=(std::min)(atz,btz);
-    Mpzf tmp(allocate(), asize);
-    Mpzf res(allocate(), bsize);
+    Mpzf tmp = noalloc();
+    tmp.init(asize);
+    Mpzf res = noalloc();
+    res.init(bsize);
     if (atz != 0) {
       mpn_rshift(tmp.data(), a.data(), asize, atz);
       if(tmp.data()[asize-1]==0) --asize;
@@ -866,34 +874,36 @@ struct Mpzf {
     // FIXME: Untested
     if (x.size < 0) throw std::range_error("Sqrt of negative number");
     if (x.size == 0) return 0;
+    Mpzf res = noalloc();
     if (x.exp % 2 == 0) {
-      Mpzf res(allocate(), (x.size + 1) / 2);
+      int siz = (x.size + 1) / 2;
+      res.init(siz);
       res.exp = x.exp / 2;
-      res.size = (x.size + 1) / 2;
+      res.size = siz;
       CGAL_assertion_code(mp_size_t rem=)
       mpn_sqrtrem(res.data(), 0, x.data(), x.size);
       CGAL_assertion(rem==0);
-      return res;
     }
     else if (x.data()[-1] == 0) {
-      Mpzf res(allocate(), (x.size + 2) / 2);
+      int siz = (x.size + 2) / 2;
+      res.init(siz);
       res.exp = (x.exp - 1) / 2;
-      res.size = (x.size + 2) / 2;
+      res.size = siz;
       CGAL_assertion_code(mp_size_t rem=)
       mpn_sqrtrem(res.data(), 0, x.data()-1, x.size+1);
       CGAL_assertion(rem==0);
-      return res;
     }
     else {
-      Mpzf res(allocate(), (x.size + 2) / 2);
+      int siz = (x.size + 2) / 2;
+      res.init(siz);
       res.exp = (x.exp - 1) / 2;
-      res.size = (x.size + 2) / 2;
+      res.size = siz;
       CGAL_assertion_code(mp_size_t rem=)
       mpn_sqrtrem(res.data(), 0, x.data(), x.size);
       CGAL_assertion(rem==0);
       mpn_lshift(res.data(), res.data(), res.size, GMP_NUMB_BITS / 2);
-      return res;
     }
+    return res;
   }
 
   friend Mpzf operator+(Mpzf const&x){
