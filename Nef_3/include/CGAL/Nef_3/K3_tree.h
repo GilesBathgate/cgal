@@ -313,12 +313,12 @@ public:
   const Plane_3& plane() const { return splitting_plane; }
   const Object_list& objects() const { return object_list; }
 
-  void transform(const Aff_transformation_3& t) {
+  void transform(const Aff_transformation_3& t, bool is_even, const Aff_transformation_3& transposed_inverse) {
     if(left_node != nullptr) {
         CGAL_assertion(right_node != nullptr);
-        left_node->transform(t);
-         right_node->transform(t);
-          splitting_plane = splitting_plane.transform(t);
+        left_node->transform(t, is_even, transposed_inverse);
+         right_node->transform(t, is_even, transposed_inverse);
+          splitting_plane = splitting_plane.transform(t, is_even, transposed_inverse);
 #ifdef CGAL_NEF3_TRIANGULATE_FACETS
     } else {
       Halffacet_triangle_handle tri;
@@ -330,6 +330,10 @@ public:
         }
 #endif // CGAL_NEF3_TRIANGULATE_FACETS
     }
+  }
+
+  void transform(const Aff_transformation_3& t) {
+      transform(t, t.is_even(), t.transposed_inverse());
   }
 
   std::size_t bytes() {
@@ -993,17 +997,20 @@ typename Object_list::difference_type n_vertices = std::distance(objects.begin()
   size_t bytes() { return root->bytes();}
   size_t leafs(int mask = 255, int lower_limit=0) { return root->leafs(mask, lower_limit);}
 
-  void transform(const Aff_transformation_3& t) {
+  void transform(const Aff_transformation_3& t, bool is_even, const Aff_transformation_3& transposed_inverse) {
     if(root == nullptr){
       return;
     }
-    root->transform(t);
+    root->transform(t, is_even, transposed_inverse);
 
     BBox_updater bbup;
     visit_k3tree(root, bbup);
     bounding_box = bbup.box();
   }
 
+  void transform(const Aff_transformation_3& t) {
+      transform(t, t.is_even(), t.transpose().inverse());
+  }
 
 #ifdef CODE_DOES_NOT_WORK_WITH_BOTH_KERNELS_AT_THE_SAME_TIME
 template <typename T>
