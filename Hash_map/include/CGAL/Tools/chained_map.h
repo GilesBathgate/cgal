@@ -41,8 +41,7 @@ public:
    T& xdef() { return stop.value; }
    const T& cxdef() const { return stop.value; }
 
-   chained_map(std::size_t n = 1) :
-       old_table_begin(0)
+   chained_map(std::size_t n = 1)
    {
        if (n < min_size)
            init_table(min_size);
@@ -68,12 +67,6 @@ public:
 
    ~chained_map()
    {
-     if (old_table_begin)
-     {
-       for (item item = old_table_begin ; item != old_table_end ; ++item)
-         destroy(item);
-       alloc.deallocate(old_table_begin, old_table_end - old_table_begin);
-     }
      for (item item = table_begin ; item != table_end ; ++item)
        destroy(item);
      alloc.deallocate(table_begin, table_end - table_begin);
@@ -113,7 +106,6 @@ public:
    T& access(std::size_t key)
    { item p = hash(key);
 
-       if (old_table_begin) del_old_table();
        if ( p->key == key ) {
            old_index = key;
            return p->value;
@@ -181,11 +173,11 @@ private:
 
    void rehash()
    {
-       old_table_begin = table_begin;
-       old_table_end = table_end;
-       old_table_size = table_size;
-       old_table_size_1 = table_size_1;
-       old_table_free = table_free;
+       item old_table_begin = table_begin;
+       item old_table_end = table_end;
+       std::size_t old_table_size = table_size;
+       std::size_t old_table_size_1 = table_size_1;
+       item old_table_free = table_free;
 
        item old_table_mid = table_begin + table_size;
 
@@ -207,10 +199,8 @@ private:
            insert(x,p->value);
            p++;
        }
-   }
 
-   void del_old_table()
-   {
+       // delete old table
        item save_table = table_begin;
        item save_table_end = table_end;
        item save_free = table_free;
@@ -225,7 +215,7 @@ private:
 
        old_table_begin = 0;
 
-       T p = access(old_index);
+       T v = access(old_index);
 
        for (item item = table_begin ; item != table_end ; ++item)
            destroy(item);
@@ -236,7 +226,7 @@ private:
        table_size = save_table_size;
        table_size_1 = save_table_size_1;
        table_free = save_free;
-       access(old_index) = p;
+       access(old_index) = v;
    }
 
    inline void insert(std::size_t key, T value)
@@ -261,21 +251,12 @@ private:
    static constexpr std::size_t non_nullptr_key = 1;
 
    element_type stop;
-
    item table_begin;
    item table_end;
    item table_free;
    std::size_t table_size;
    std::size_t table_size_1;
-
-   item old_table_begin;
-   item old_table_end;
-   item old_table_free;
-   std::size_t old_table_size;
-   std::size_t old_table_size_1;
-
    std::size_t old_index;
-
    allocator_type alloc;
 };
 
