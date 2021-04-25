@@ -153,13 +153,14 @@ private:
 
        table_size = t;
        table_size_1 = t-1;
-       table_begin = alloc.allocate(t + t/2);
-       for (std::size_t i = 0 ; i < t + t/2 ; ++i){
+       std::size_t s = t + t/2;
+       table_begin = alloc.allocate(s);
+       for (std::size_t i = 0 ; i < s ; ++i){
            allocator_type_traits::construct(alloc,table_begin + i);
        }
 
        table_free = table_begin + t;
-       table_end = table_begin + t + t/2;
+       table_end = table_begin + s;
 
        for (item p = table_begin; p < table_free; p++)
        { p->next = &stop;
