@@ -23,40 +23,37 @@ namespace CGAL {
 
 namespace internal {
 
-template <typename T, typename Allocator = CGAL_ALLOCATOR(T) > class chained_map;
-template <typename T> class chained_map_elem;
-
-template <typename T>
-class chained_map_elem
-{
-  template<typename T2, typename Alloc> friend class chained_map;
-  std::size_t k; T i;
-  chained_map_elem<T>*  succ;
-};
-
-template <typename T, typename Allocator>
+template <typename T, typename Allocator = CGAL_ALLOCATOR(T) >
 class chained_map
 {
+   struct chained_map_elem
+   {
+     std::size_t k;
+     T i;
+     chained_map_elem*  succ;
+   };
+
+
    const std::size_t nullptrKEY;
    const std::size_t NONnullptrKEY;
 
-   chained_map_elem<T> STOP;
+   chained_map_elem STOP;
 
-   chained_map_elem<T>* table;
-   chained_map_elem<T>* table_end;
-   chained_map_elem<T>* free;
+   chained_map_elem* table;
+   chained_map_elem* table_end;
+   chained_map_elem* free;
    std::size_t table_size;
    std::size_t table_size_1;
 
-   chained_map_elem<T>* old_table;
-   chained_map_elem<T>* old_table_end;
-   chained_map_elem<T>* old_free;
+   chained_map_elem* old_table;
+   chained_map_elem* old_table_end;
+   chained_map_elem* old_free;
    std::size_t old_table_size;
    std::size_t old_table_size_1;
 
    std::size_t old_index;
    typedef std::allocator_traits<Allocator> Allocator_traits;
-   typedef typename Allocator_traits::template rebind_alloc<chained_map_elem<T> > allocator_type;
+   typedef typename Allocator_traits::template rebind_alloc<chained_map_elem> allocator_type;
 
    allocator_type alloc;
 
@@ -67,7 +64,7 @@ private:
    void init_inf(T& x)   const { x = STOP.i; }
 
 
-   chained_map_elem<T>*  HASH(std::size_t x)  const
+   chained_map_elem*  HASH(std::size_t x)  const
    { return table + (x & table_size_1);  }
 
    void init_table(std::size_t t);
@@ -76,7 +73,7 @@ private:
 
    inline void insert(std::size_t x, T y);
 
-   void destroy(chained_map_elem<T>* item)
+   void destroy(chained_map_elem* item)
    {
      typedef std::allocator_traits<allocator_type> Allocator_type_traits;
      Allocator_type_traits::destroy(alloc,item);
@@ -84,7 +81,7 @@ private:
 
 public:
    static constexpr std::size_t min_size = 32;
-   typedef chained_map_elem<T>*  chained_map_item;
+   typedef chained_map_elem*  chained_map_item;
    typedef chained_map_item item;
 
    std::size_t index(chained_map_item it) const { return it->k; }
