@@ -153,6 +153,10 @@ public:
 
 private:
 
+   typedef std::allocator_traits<Allocator> allocator_traits;
+   typedef typename allocator_traits::template rebind_alloc<element_type> allocator_type;
+   typedef std::allocator_traits<allocator_type> allocator_type_traits;
+
    item  hash(std::size_t key)  const
    { return table_begin + (key & table_size_1);  }
 
@@ -162,7 +166,7 @@ private:
        table_size_1 = t-1;
        table_begin = alloc.allocate(t + t/2);
        for (std::size_t i = 0 ; i < t + t/2 ; ++i){
-           std::allocator_traits<allocator_type>::construct(alloc,table_begin + i);
+           allocator_type_traits::construct(alloc,table_begin + i);
        }
 
        table_free = table_begin + t;
@@ -250,7 +254,6 @@ private:
 
    void destroy(item item)
    {
-     typedef std::allocator_traits<allocator_type> allocator_type_traits;
      allocator_type_traits::destroy(alloc,item);
    }
 
@@ -272,8 +275,6 @@ private:
    std::size_t old_table_size_1;
 
    std::size_t old_index;
-   typedef std::allocator_traits<Allocator> allocator_traits;
-   typedef typename allocator_traits::template rebind_alloc<element_type> allocator_type;
 
    allocator_type alloc;
 };
