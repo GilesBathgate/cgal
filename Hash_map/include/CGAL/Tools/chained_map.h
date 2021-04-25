@@ -26,24 +26,23 @@ namespace internal {
 template <typename T, typename Allocator = CGAL_ALLOCATOR(T) >
 class chained_map
 {
-   struct chained_map_elem
+   struct element_type
    {
-     std::size_t k;
-     T i;
-     chained_map_elem*  succ;
+     std::size_t key;
+     T value;
+     element_type*  next;
    };
 
 public:
    static constexpr std::size_t min_size = 32;
-   typedef chained_map_elem*  chained_map_item;
-   typedef chained_map_item item;
+   typedef element_type* item;
 
-   T& inf(chained_map_item it) const { return it->i; }
-   T& xdef() { return STOP.i; }
-   const T& cxdef() const { return STOP.i; }
+   T& inf(item it) const { return it->value; }
+   T& xdef() { return stop.value; }
+   const T& cxdef() const { return stop.value; }
 
    chained_map(std::size_t n = 1) :
-       old_table(0)
+       old_table_begin(0)
    {
        if (n < min_size)
            init_table(min_size);
@@ -56,94 +55,94 @@ public:
 
    void clear()
    {
-       for(chained_map_item p = table + 1; p < free; p++)
-         if (p->k != nullptrKEY || p >= table + table_size)
-           p->i = T();
+       for(item p = table_begin + 1; p < table_free; p++)
+         if (p->key != nullptr_key || p >= table_begin + table_size)
+           p->value = T();
 
-       for (chained_map_item item = table ; item != table_end ; ++item)
+       for (item item = table_begin ; item != table_end ; ++item)
            destroy(item);
-       alloc.deallocate(table, table_end - table);
+       alloc.deallocate(table_begin, table_end - table_begin);
 
        init_table(min_size);
    }
 
    ~chained_map()
    {
-     if (old_table)
+     if (old_table_begin)
      {
-       for (chained_map_item item = old_table ; item != old_table_end ; ++item)
+       for (item item = old_table_begin ; item != old_table_end ; ++item)
          destroy(item);
-       alloc.deallocate(old_table, old_table_end - old_table);
+       alloc.deallocate(old_table_begin, old_table_end - old_table_begin);
      }
-     for (chained_map_item item = table ; item != table_end ; ++item)
+     for (item item = table_begin ; item != table_end ; ++item)
        destroy(item);
-     alloc.deallocate(table, table_end - table);
+     alloc.deallocate(table_begin, table_end - table_begin);
    }
 
-   T& access(chained_map_item p, std::size_t x)
+   T& access(item it, std::size_t key)
    {
-       STOP.k = x;
-       chained_map_item q = p->succ;
-       while (q->k != x) q = q->succ;
-       if (q != &STOP)
-       { old_index = x;
-           return q->i;
+       stop.key = key;
+       item q = it->next;
+       while (q->key != key) q = q->next;
+       if (q != &stop)
+       { old_index = key;
+           return q->value;
        }
 
        // index x not present, insert it
 
-       if (free == table_end)   // table full: rehash
+       if (table_free == table_end)   // table full: rehash
        { rehash();
-           p = HASH(x);
+           it = hash(key);
        }
 
-       if (p->k == nullptrKEY)
-       { p->k = x;
-           p->i = STOP.i;  // initializes p->i to xdef
-           return p->i;
+       if (it->key == nullptr_key)
+       { it->key = key;
+           it->value = stop.value;  // initializes p->i to xdef
+           return it->value;
        }
 
-       q = free++;
-       q->k = x;
-       q->i = STOP.i;    // initializes q->i to xdef
-       q->succ = p->succ;
-       p->succ = q;
-       return q->i;
+       q = table_free++;
+       q->key = key;
+       q->value = stop.value;    // initializes q->i to xdef
+       q->next = it->next;
+       it->next = q;
+       return q->value;
    }
 
-   T& access(std::size_t x)
-   { chained_map_item p = HASH(x);
+   T& access(std::size_t key)
+   { item p = hash(key);
 
-       if (old_table) del_old_table();
-       if ( p->k == x ) {
-           old_index = x;
-           return p->i;
+       if (old_table_begin) del_old_table();
+       if ( p->key == key ) {
+           old_index = key;
+           return p->value;
        }
        else {
-           if ( p->k == nullptrKEY ) {
-               p->k = x;
-               p->i = STOP.i;  // initializes p->i to xdef
-               old_index = x;
-               return p->i;
+           if ( p->key == nullptr_key ) {
+               p->key = key;
+               p->value = stop.value;  // initializes p->i to xdef
+               old_index = key;
+               return p->value;
            } else
-               return access(p,x);
+               return access(p,key);
        }
    }
 
-   chained_map_item lookup(std::size_t x) const
-   { chained_map_item p = HASH(x);
-       ((std::size_t &)STOP.k) = x;  // cast away const
-       while (p->k != x)
-       { p = p->succ; }
-       return (p == &STOP) ? 0 : p;
+   item lookup(std::size_t key) const
+   { item p = hash(key);
+       ((std::size_t &)stop.key) = key;  // cast away const
+       while (p->key != key)
+       { p = p->next; }
+       return (p == &stop) ? 0 : p;
    }
 
    void statistics() const
    { std::cout << "table_size: " << table_size <<"\n";
        std::size_t n = 0;
-       for (chained_map_item p = table + 1; p < table + table_size; p++)
-           if (p ->k != nullptrKEY) n++;
-       std::size_t used_in_overflow = free - (table + table_size );
+       for (item p = table_begin + 1; p < table_begin + table_size; p++)
+           if (p ->key != nullptr_key) n++;
+       std::size_t used_in_overflow = table_free - (table_begin + table_size );
        n += used_in_overflow;
        std::cout << "number of entries: " << n << "\n";
        std::cout << "fraction of entries in first position: " <<
@@ -154,127 +153,127 @@ public:
 
 private:
 
-   chained_map_elem*  HASH(std::size_t x)  const
-   { return table + (x & table_size_1);  }
+   item  hash(std::size_t key)  const
+   { return table_begin + (key & table_size_1);  }
 
    void init_table(std::size_t t)
    {
        table_size = t;
        table_size_1 = t-1;
-       table = alloc.allocate(t + t/2);
+       table_begin = alloc.allocate(t + t/2);
        for (std::size_t i = 0 ; i < t + t/2 ; ++i){
-           std::allocator_traits<allocator_type>::construct(alloc,table + i);
+           std::allocator_traits<allocator_type>::construct(alloc,table_begin + i);
        }
 
-       free = table + t;
-       table_end = table + t + t/2;
+       table_free = table_begin + t;
+       table_end = table_begin + t + t/2;
 
-       for (chained_map_item p = table; p < free; p++)
-       { p->succ = &STOP;
-           p->k = nullptrKEY;
+       for (item p = table_begin; p < table_free; p++)
+       { p->next = &stop;
+           p->key = nullptr_key;
        }
-       table->k = NONnullptrKEY;
+       table_begin->key = non_nullptr_key;
    }
 
    void rehash()
    {
-       old_table = table;
+       old_table_begin = table_begin;
        old_table_end = table_end;
        old_table_size = table_size;
        old_table_size_1 = table_size_1;
-       old_free = free;
+       old_table_free = table_free;
 
-       chained_map_item old_table_mid = table + table_size;
+       item old_table_mid = table_begin + table_size;
 
        init_table(2*table_size);
 
-       chained_map_item p;
+       item p;
 
-       for(p = old_table + 1; p < old_table_mid; p++)
-       { std::size_t x = p->k;
-           if ( x != nullptrKEY ) // list p is non-empty
-           { chained_map_item q = HASH(x);
-               q->k = x;
-               q->i = p->i;
+       for(p = old_table_begin + 1; p < old_table_mid; p++)
+       { std::size_t x = p->key;
+           if ( x != nullptr_key ) // list p is non-empty
+           { item q = hash(x);
+               q->key = x;
+               q->value = p->value;
            }
        }
 
        while (p < old_table_end)
-       { std::size_t x = p->k;
-           insert(x,p->i);
+       { std::size_t x = p->key;
+           insert(x,p->value);
            p++;
        }
    }
 
    void del_old_table()
    {
-       chained_map_item save_table = table;
-       chained_map_item save_table_end = table_end;
-       chained_map_item save_free = free;
+       item save_table = table_begin;
+       item save_table_end = table_end;
+       item save_free = table_free;
        std::size_t save_table_size = table_size;
        std::size_t save_table_size_1 = table_size_1;
 
-       table = old_table;
+       table_begin = old_table_begin;
        table_end = old_table_end;
        table_size = old_table_size;
        table_size_1 = old_table_size_1;
-       free = old_free;
+       table_free = old_table_free;
 
-       old_table = 0;
+       old_table_begin = 0;
 
        T p = access(old_index);
 
-       for (chained_map_item item = table ; item != table_end ; ++item)
+       for (item item = table_begin ; item != table_end ; ++item)
            destroy(item);
-       alloc.deallocate(table, table_end - table);
+       alloc.deallocate(table_begin, table_end - table_begin);
 
-       table = save_table;
+       table_begin = save_table;
        table_end = save_table_end;
        table_size = save_table_size;
        table_size_1 = save_table_size_1;
-       free = save_free;
+       table_free = save_free;
        access(old_index) = p;
    }
 
-   inline void insert(std::size_t x, T y)
-   { chained_map_item q = HASH(x);
-       if ( q->k == nullptrKEY ) {
-           q->k = x;
-           q->i = y;
+   inline void insert(std::size_t key, T value)
+   { item q = hash(key);
+       if ( q->key == nullptr_key ) {
+           q->key = key;
+           q->value = value;
        } else {
-           free->k = x;
-           free->i = y;
-           free->succ = q->succ;
-           q->succ = free++;
+           table_free->key = key;
+           table_free->value = value;
+           table_free->next = q->next;
+           q->next = table_free++;
        }
    }
 
-   void destroy(chained_map_elem* item)
+   void destroy(item item)
    {
-     typedef std::allocator_traits<allocator_type> Allocator_type_traits;
-     Allocator_type_traits::destroy(alloc,item);
+     typedef std::allocator_traits<allocator_type> allocator_type_traits;
+     allocator_type_traits::destroy(alloc,item);
    }
 
-   static constexpr std::size_t nullptrKEY = 0;
-   static constexpr std::size_t NONnullptrKEY = 1;
+   static constexpr std::size_t nullptr_key = 0;
+   static constexpr std::size_t non_nullptr_key = 1;
 
-   chained_map_elem STOP;
+   element_type stop;
 
-   chained_map_elem* table;
-   chained_map_elem* table_end;
-   chained_map_elem* free;
+   item table_begin;
+   item table_end;
+   item table_free;
    std::size_t table_size;
    std::size_t table_size_1;
 
-   chained_map_elem* old_table;
-   chained_map_elem* old_table_end;
-   chained_map_elem* old_free;
+   item old_table_begin;
+   item old_table_end;
+   item old_table_free;
    std::size_t old_table_size;
    std::size_t old_table_size_1;
 
    std::size_t old_index;
-   typedef std::allocator_traits<Allocator> Allocator_traits;
-   typedef typename Allocator_traits::template rebind_alloc<chained_map_elem> allocator_type;
+   typedef std::allocator_traits<Allocator> allocator_traits;
+   typedef typename allocator_traits::template rebind_alloc<element_type> allocator_type;
 
    allocator_type alloc;
 };
