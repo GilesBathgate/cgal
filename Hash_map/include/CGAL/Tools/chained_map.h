@@ -61,7 +61,6 @@ public:
    T& xdef() { return STOP.i; }
    const T& cxdef() const { return STOP.i; }
 private:
-   void init_inf(T& x)   const { x = STOP.i; }
 
    chained_map_elem*  HASH(std::size_t x)  const
    { return table + (x & table_size_1);  }
@@ -169,8 +168,7 @@ public:
    typedef chained_map_elem*  chained_map_item;
    typedef chained_map_item item;
 
-   std::size_t index(chained_map_item it) const { return it->k; }
-   T&            inf(chained_map_item it) const { return it->i; }
+   T& inf(chained_map_item it) const { return it->i; }
 
    chained_map(std::size_t n = 1) :
        nullptrKEY(0), NONnullptrKEY(1), old_table(0)
@@ -184,50 +182,11 @@ public:
        }
    }
 
-   chained_map(const chained_map<T, Allocator>& D) :
-       nullptrKEY(0), NONnullptrKEY(1), old_table(0)
-   {
-       init_table(D.table_size);
-       STOP.i = D.STOP.i; // xdef
-
-       for(chained_map_item p = D.table + 1; p < D.free; p++)
-       { if (p->k != nullptrKEY || p >= D.table + D.table_size)
-           { insert(p->k,p->i);
-               //D.copy_inf(p->i);  // see chapter Implementation
-           }
-       }
-   }
-
-   chained_map& operator=(const chained_map<T, Allocator>& D)
-   {
-     clear_entries();
-
-     for (chained_map_item item = table ; item != table_end ; ++item)
-       destroy(item);
-
-     alloc.deallocate(table, table_end - table);
-
-     init_table(D.table_size);
-     STOP.i = D.STOP.i; // xdef
-
-     for(chained_map_item p = D.table + 1; p < D.free; p++)
-     { if (p->k != nullptrKEY || p >= D.table + D.table_size)
-       { insert(p->k,p->i);
-         //copy_inf(p->i);    // see chapter Implementation
-       }
-     }
-     return *this;
-   }
-
-   void clear_entries()
-   { for(chained_map_item p = table + 1; p < free; p++)
-           if (p->k != nullptrKEY || p >= table + table_size)
-               p->i = T();
-   }
-
    void clear()
    {
-       clear_entries();
+       for(chained_map_item p = table + 1; p < free; p++)
+         if (p->k != nullptrKEY || p >= table + table_size)
+           p->i = T();
 
        for (chained_map_item item = table ; item != table_end ; ++item)
            destroy(item);
@@ -268,13 +227,13 @@ public:
 
        if (p->k == nullptrKEY)
        { p->k = x;
-           init_inf(p->i);  // initializes p->i to xdef
+           p->i = STOP.i;  // initializes p->i to xdef
            return p->i;
        }
 
        q = free++;
        q->k = x;
-       init_inf(q->i);    // initializes q->i to xdef
+       q->i = STOP.i;    // initializes q->i to xdef
        q->succ = p->succ;
        p->succ = q;
        return q->i;
@@ -291,7 +250,7 @@ public:
        else {
            if ( p->k == nullptrKEY ) {
                p->k = x;
-               init_inf(p->i);  // initializes p->i to xdef
+               p->i = STOP.i;  // initializes p->i to xdef
                old_index = x;
                return p->i;
            } else
@@ -305,15 +264,6 @@ public:
        while (p->k != x)
        { p = p->succ; }
        return (p == &STOP) ? 0 : p;
-   }
-
-   chained_map_item first_item() const
-   { return next_item(table); }
-
-   chained_map_item next_item(chained_map_item it) const
-   { if (it == 0) return 0;
-       do it++; while (it < table + table_size && it->k == nullptrKEY);
-       return (it < free ? it : 0);
    }
 
    void statistics() const
