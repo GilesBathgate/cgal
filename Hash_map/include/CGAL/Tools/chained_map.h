@@ -41,15 +41,9 @@ public:
    T& xdef() { return stop.value; }
    const T& cxdef() const { return stop.value; }
 
-   chained_map(std::size_t n = 1)
+   chained_map(std::size_t n = min_size)
    {
-       if (n < min_size)
-           init_table(min_size);
-       else {
-           std::size_t ts = 1;
-           while (ts < n) ts <<= 1;
-           init_table(ts);
-       }
+       init_table(n);
    }
 
    void clear()
@@ -152,8 +146,11 @@ private:
    item  hash(std::size_t key)  const
    { return table_begin + (key & table_size_1);  }
 
-   void init_table(std::size_t t)
+   void init_table(std::size_t n)
    {
+       std::size_t t = min_size;
+       while (t < n) t <<= 1;
+
        table_size = t;
        table_size_1 = t-1;
        table_begin = alloc.allocate(t + t/2);
