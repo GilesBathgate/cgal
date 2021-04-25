@@ -43,7 +43,7 @@ public:
    const T& cxdef() const { return STOP.i; }
 
    chained_map(std::size_t n = 1) :
-       nullptrKEY(0), NONnullptrKEY(1), old_table(0)
+       old_table(0)
    {
        if (n < min_size)
            init_table(min_size);
@@ -255,8 +255,8 @@ private:
      Allocator_type_traits::destroy(alloc,item);
    }
 
-   const std::size_t nullptrKEY;
-   const std::size_t NONnullptrKEY;
+   static constexpr std::size_t nullptrKEY = 0;
+   static constexpr std::size_t NONnullptrKEY = 1;
 
    chained_map_elem STOP;
 
