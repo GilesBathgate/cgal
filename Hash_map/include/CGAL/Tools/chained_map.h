@@ -41,13 +41,17 @@ public:
    T& xdef() { return stop.value; }
    const T& cxdef() const { return stop.value; }
 
-   chained_map(std::size_t n = min_size)
+   chained_map(std::size_t n = min_size) :
+       table_begin(nullptr)
    {
-       init_table(n);
+       reserved_size = n;
    }
 
    void clear()
    {
+      if(!table_begin)
+          return;
+
        for(item p = table_begin + 1; p < table_free; p++)
          if (p->key != nullptr_key || p >= table_begin + table_size)
            p->value = T();
@@ -56,11 +60,14 @@ public:
            destroy(item);
        alloc.deallocate(table_begin, table_end - table_begin);
 
-       init_table(min_size);
+       table_begin = nullptr;
    }
 
    ~chained_map()
    {
+      if(!table_begin)
+          return;
+
      for (item item = table_begin ; item != table_end ; ++item)
        destroy(item);
      alloc.deallocate(table_begin, table_end - table_begin);
@@ -98,7 +105,11 @@ public:
    }
 
    T& access(std::size_t key)
-   { item p = hash(key);
+   {
+       if(!table_begin)
+           init_table(reserved_size);
+
+       item p = hash(key);
 
        if ( p->key == key ) {
            old_index = key;
@@ -116,11 +127,15 @@ public:
    }
 
    item lookup(std::size_t key) const
-   { item p = hash(key);
+   {
+       if(!table_begin)
+           return nullptr;
+
+       item p = hash(key);
        ((std::size_t &)stop.key) = key;  // cast away const
        while (p->key != key)
        { p = p->next; }
-       return (p == &stop) ? 0 : p;
+       return (p == &stop) ? nullptr : p;
    }
 
    void statistics() const
@@ -255,6 +270,7 @@ private:
    std::size_t table_size;
    std::size_t table_size_1;
    std::size_t old_index;
+   std::size_t reserved_size;
    allocator_type alloc;
 };
 
