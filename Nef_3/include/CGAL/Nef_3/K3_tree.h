@@ -333,7 +333,7 @@ public:
   }
 
   void transform(const Aff_transformation_3& t) {
-      transform(t, t.is_even(), t.transposed_inverse());
+      transform(t, t.is_even(), t.transpose().inverse());
   }
 
   std::size_t bytes() {
