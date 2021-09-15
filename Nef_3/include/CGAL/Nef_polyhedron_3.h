@@ -2071,8 +2071,7 @@ Nef_polyhedron_3( const SNC_structure& W, SNC_point_locator* _pl,
     set_snc(snc());
   }
   if(clone_pl) {
-    pl() = _pl->create();
-    pl()->initialize(&snc());
+    pl() = _pl->clone();
   }
   else
     pl() = _pl;

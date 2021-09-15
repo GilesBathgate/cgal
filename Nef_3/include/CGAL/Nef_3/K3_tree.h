@@ -279,6 +279,14 @@ private:
   typedef boost::container::deque<Node> Node_range;
   typedef Node* Node_handle;
 
+  K3_tree(const K3_tree& other) {
+    CGAL_assertion(other.root == &(other.nodes.front()));
+    traits = other.traits;
+    nodes = other.nodes;
+    root = &(nodes.front());
+    max_depth = other.max_depth;
+    bounding_box = other.bounding_box;
+  };
 
 public:
   class Objects_around_segment
@@ -580,6 +588,10 @@ typename Object_list::difference_type n_vertices = std::distance(objects.begin()
 
   void add_vertex(Vertex_handle v) {
     root->add_vertex(v,0);
+  }
+
+  K3_tree* clone() {
+    return new K3_tree(*this);
   }
 
   class BBox_updater {

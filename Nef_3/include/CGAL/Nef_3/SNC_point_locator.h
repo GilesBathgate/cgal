@@ -232,7 +232,11 @@ public:
 
   virtual Self* clone() const {
     Self* result = new Self;
-    //TODO implement clone
+    if(initialized) {
+      result->initialized = true;
+      result->candidate_provider = candidate_provider->clone();
+      result->is = is;
+    }
     return result;
   }
 
