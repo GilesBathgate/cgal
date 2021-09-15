@@ -1338,7 +1338,7 @@ protected:
       CGAL_NEF_TRACEN("simplify(): point locator structure updated? " << updated);
 #else
       SNC_point_locator* old_pl = pl();
-      pl() = pl()->clone();
+      pl() = pl()->create();
       pl()->initialize(&snc());
       delete old_pl;
 #endif
@@ -1842,7 +1842,7 @@ protected:
 
       // are the upcoming lines necessary?
       SNC_point_locator* old_pl = pl();
-      pl() = pl()->clone();
+      pl() = pl()->create();
       pl()->initialize(&snc());
       delete old_pl;
 
@@ -1867,7 +1867,7 @@ protected:
          aff.homogeneous(0,0) != aff.homogeneous(2,2) ||
          !this->is_bounded()) {
            SNC_point_locator* old_pl = pl();
-           pl() = pl()->clone();
+           pl() = pl()->create();
            pl()->initialize(&snc());
            delete old_pl;
          }
@@ -2071,7 +2071,7 @@ Nef_polyhedron_3( const SNC_structure& W, SNC_point_locator* _pl,
     set_snc(snc());
   }
   if(clone_pl) {
-    pl() = _pl->clone();
+    pl() = _pl->create();
     pl()->initialize(&snc());
   }
   else

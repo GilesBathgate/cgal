@@ -122,7 +122,7 @@ class External_structure_builder : public Modifier_base<typename Nef_::SNC_and_P
     }
     */
     SNC_point_locator* old_pl = pl;
-    pl = pl->clone();
+    pl = pl->create();
     sncpl.pl = pl;
     delete old_pl;
     SNC_external_structure C(*sncp,pl);

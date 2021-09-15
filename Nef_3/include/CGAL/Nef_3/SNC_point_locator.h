@@ -104,6 +104,8 @@ public:
 
   virtual void initialize(SNC_structure* W) = 0;
 
+  virtual Self* create() const = 0;
+
   virtual Self* clone() const = 0;
 
   virtual void transform(const Aff_transformation_3& t) = 0;
@@ -224,8 +226,14 @@ public:
     initialized = true;
   }
 
-  virtual Self* clone() const {
+  virtual Self* create() const {
     return new Self;
+  }
+
+  virtual Self* clone() const {
+    Self* result = new Self;
+    //TODO implement clone
+    return result;
   }
 
   virtual void transform(const Aff_transformation_3& t) {
