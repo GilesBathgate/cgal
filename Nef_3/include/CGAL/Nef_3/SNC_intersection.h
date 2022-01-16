@@ -85,7 +85,7 @@ class SNC_intersection : public SNC_const_decorator<SNC_structure_> {
                                 bool check_has_on = true) const {
     if(check_has_on && !f->plane().has_on(p))
       return false;
-    return (locate_point_in_halffacet( p, f) == CGAL::ON_BOUNDED_SIDE);
+    return (locate_point_in_halffacet( p, f, false) == CGAL::ON_BOUNDED_SIDE);
   }
 
 
@@ -304,7 +304,8 @@ class SNC_intersection : public SNC_const_decorator<SNC_structure_> {
 
 
   Bounded_side locate_point_in_halffacet( const Point_3& p,
-                                          Halffacet_const_handle f) const {
+                                          Halffacet_const_handle f,
+                                          bool CGAL_assertion_code(check_has_on) = true) const {
     CGAL_NEF_TRACEN("locate point in halffacet " << p << ", " << f->plane());
     typedef Project_shalfedge_point
       < SHalfedge, const Point_3> Project;
@@ -314,7 +315,10 @@ class SNC_intersection : public SNC_const_decorator<SNC_structure_> {
     typedef Container_from_circulator<Circulator> Container;
 
     Plane_3 h(f->plane());
-    CGAL_assertion(h.has_on(p));
+
+    CGAL_assertion_code(if(check_has_on))
+      CGAL_assertion(h.has_on(p));
+
     Halffacet_cycle_const_iterator fc = f->facet_cycles_begin();
     Bounded_side outer_bound_pos(CGAL::ON_BOUNDARY);
     if (fc.is_shalfedge() ) {
