@@ -186,18 +186,16 @@ public:
   using Base::get_visible_facet;
 public:
   SNC_point_locator_by_spatial_subdivision() :
-    initialized(false), candidate_provider(0) {}
+    candidate_provider(nullptr) {}
 
 
   virtual void initialize(SNC_structure* W) {
 
-    if(initialized)
+    if(candidate_provider)
       delete candidate_provider;
 
     this->set_snc(*W);
-    candidate_provider = new SNC_candidate_provider(W);
-
-    initialized = true;
+    candidate_provider = nullptr;
   }
 
   virtual Self* clone() const {
@@ -205,20 +203,22 @@ public:
   }
 
   virtual void transform(const Aff_transformation_3& t) {
-    candidate_provider->transform(t);
+    if(candidate_provider)
+      candidate_provider->transform(t);
   }
 
-  virtual ~SNC_point_locator_by_spatial_subdivision() noexcept(!CGAL_ASSERTIONS_ENABLED)
+  virtual ~SNC_point_locator_by_spatial_subdivision()
   {
-    CGAL_destructor_warning(initialized ||
-                 candidate_provider == 0); // required?
-    if(initialized)
+    if(candidate_provider)
       delete candidate_provider;
   }
 
   virtual Object_handle shoot(const Ray_3& ray, int mask=255) const {
+
+    if(!candidate_provider)
+      candidate_provider = new SNC_candidate_provider(this->sncp());
+
     CGAL_NEF_TIMER(rs_t.start());
-    CGAL_assertion( initialized);
     _CGAL_NEF_TRACEN( "shooting: "<<ray);
     Object_handle result;
     Vertex_handle v;
@@ -299,9 +299,12 @@ public:
   }
 
   virtual Object_handle locate( const Point_3& p) const {
+
+    if(!candidate_provider)
+      candidate_provider = new SNC_candidate_provider(this->sncp());
+
     if(Infi_box::extended_kernel()) {
     CGAL_NEF_TIMER(pl_t.start());
-    CGAL_assertion( initialized);
     _CGAL_NEF_TRACEN( "locate "<<p);
     Object_handle result;
     Vertex_handle v;
@@ -346,8 +349,6 @@ public:
 
   } else {   // standard kernel
 
-
-    CGAL_assertion( initialized);
     _CGAL_NEF_TRACEN( "locate "<<p);
     typename SNC_structure::FT min_distance;
     typename SNC_structure::FT tmp_distance;
@@ -531,8 +532,10 @@ public:
   virtual void intersect_with_edges_and_facets( Halfedge_handle e0,
         const typename SNC_point_locator::Intersection_call_back& call_back) const {
 
+    if(!candidate_provider)
+      candidate_provider = new SNC_candidate_provider(this->sncp());
+
     CGAL_NEF_TIMER(it_t.start());
-    CGAL_assertion( initialized);
     _CGAL_NEF_TRACEN( "intersecting edge: "<<&*e0<<' '<<Segment_3(e0->source()->point(),
                                                          e0->twin()->source()->point()));
 
@@ -582,8 +585,11 @@ public:
 
   virtual void intersect_with_edges( Halfedge_handle e0,
     const typename SNC_point_locator::Intersection_call_back& call_back) const {
+
+    if(!candidate_provider)
+      candidate_provider = new SNC_candidate_provider(this->sncp());
+
     CGAL_NEF_TIMER(it_t.start());
-    CGAL_assertion( initialized);
     _CGAL_NEF_TRACEN( "intersecting edge: "<<&*e0<<' '<<Segment_3(e0->source()->point(),
                                                          e0->twin()->source()->point()));
     Segment_3 s(Segment_3(e0->source()->point(),e0->twin()->source()->point()));
@@ -622,8 +628,12 @@ public:
 
   virtual void intersect_with_facets( Halfedge_handle e0,
     const typename SNC_point_locator::Intersection_call_back& call_back) const {
+
+    if(!candidate_provider)
+      candidate_provider = new SNC_candidate_provider(this->sncp());
+
     CGAL_NEF_TIMER(it_t.start());
-    CGAL_assertion( initialized);
+
     _CGAL_NEF_TRACEN( "intersecting edge: "<< Segment_3(e0->source()->point(),
                                                e0->twin()->source()->point()));
     Segment_3 s(Segment_3(e0->source()->point(),e0->twin()->source()->point()));
@@ -706,8 +716,7 @@ public:
   }
 
 private:
-  bool initialized;
-  SNC_candidate_provider* candidate_provider;
+  mutable SNC_candidate_provider* candidate_provider;
   SNC_intersection is;
 };
 
