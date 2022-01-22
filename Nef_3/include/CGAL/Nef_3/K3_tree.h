@@ -108,15 +108,8 @@ typedef Smaller_than<
 public:
     typedef Node* Node_handle;
   Node(const Vertex_list& V, const Halfedge_list& E, const Halffacet_list& F) :
-    left_node(nullptr), right_node(nullptr)
+    left_node(nullptr), right_node(nullptr), vertex_list(V), edge_list(E), facet_list(F)
   {
-      object_list.reserve(V.size()+E.size()+F.size());
-      for(Vertex_const_iterator vi=V.begin(); vi!=V.end(); ++vi)
-          object_list.push_back(make_object(*vi));
-      for(Halfedge_const_iterator ei=E.begin(); ei!=E.end(); ++ei)
-          object_list.push_back(make_object(*ei));
-      for(Halffacet_const_iterator fi=F.begin(); fi!=F.end(); ++fi)
-          object_list.push_back(make_object(*fi));
   }
 
   Node(Node_handle l, Node_handle r, const Plane_3& pl) :
@@ -132,8 +125,16 @@ public:
 
   Node_handle left() const { return left_node; }
   Node_handle right() const { return right_node; }
+
+  bool empty() { return vertex_list.empty() && edge_list.empty() && facet_list.empty(); }
+  Vertex_const_iterator vertices_begin() { return vertex_list.begin(); }
+  Vertex_const_iterator vertices_end() { return vertex_list.end(); }
+  Halfedge_const_iterator edges_begin() { return edge_list.begin(); }
+  Halfedge_const_iterator edges_end() { return edge_list.end(); }
+  Halffacet_const_iterator facets_begin() { return facet_list.begin(); }
+  Halffacet_const_iterator facets_end() { return facet_list.end(); }
+
   const Plane_3& plane() const { return splitting_plane; }
-  const Object_list& objects() const { return object_list; }
 
   void transform(const Aff_transformation_3& t) {
     if(left_node != nullptr) {
@@ -146,7 +147,7 @@ public:
 
   void add_facet(Halffacet_handle f, int depth) {
     if(left_node == nullptr) {
-      object_list.push_back(make_object(f));
+      facet_list.push_back(f);
       return;
     }
 
@@ -160,7 +161,7 @@ public:
 
   void add_edge(Halfedge_handle e, int depth) {
     if(left_node == nullptr) {
-      object_list.push_back(make_object(e));
+      edge_list.push_back(e);
       return;
     }
 
@@ -174,7 +175,7 @@ public:
 
   void add_vertex(Vertex_handle v, int depth) {
     if(left_node == nullptr) {
-      object_list.push_back(make_object(v));
+      vertex_list.push_back(v);
       return;
     }
 
@@ -190,9 +191,10 @@ public:
 friend std::ostream& operator<<
   (std::ostream& os, const Node_handle node) {
   CGAL_assertion( node != nullptr);
-  if( node->is_leaf())
-    os <<  node->objects().size();
-  else {
+  if( node->is_leaf()) {
+    size_t size = node->vertex_list.size() + node->edge_list.size() + node->facet_list.size();
+    os <<  size;
+  } else {
     os << " ( ";
     if( !node->left()) os << '-';
     else os << node->left();
@@ -209,14 +211,16 @@ private:
   Node_handle left_node;
   Node_handle right_node;
   Plane_3 splitting_plane;
-  Object_list object_list;
+  Vertex_list vertex_list;
+  Halffacet_list facet_list;
+  Halfedge_list edge_list;
 };
 
   typedef boost::container::deque<Node> Node_range;
-  typedef Node* Node_handle;
-
 
 public:
+  typedef Node* Node_handle;
+
   class Objects_around_segment
   {
    public:
@@ -266,9 +270,9 @@ public:
         ++(*this); // place the interator in the first intersected cell
       }
       Iterator( const Self& i) : S(i.S), node(i.node) {}
-      const Object_list& operator*() const {
+      Node_handle get_node() const {
         CGAL_assertion( node != nullptr);
-        return node->objects();
+        return node;
       }
       Self& operator++() {
 
@@ -328,10 +332,7 @@ else {
         return !(*this == i);
       }
     private:
-      Node_handle get_node() const {
-        CGAL_assertion( node != nullptr);
-        return node;
-      }
+
 
 void divide_segment_by_plane( Segment_3 s, Plane_3 pl,
                               Segment_3& s1, Segment_3& s2) {
@@ -441,8 +442,8 @@ public:
     non_efective_splits=0;
     root = build_kdtree(vertices, edges, facets, 0);
   }
-  const Object_list& objects_around_point( const Point_3& p) const {
-    return locate( p, root);
+  Node_handle nodes_around_point( const Point_3& p) const {
+    return locate_cell_containing( p, root);
   }
   Objects_along_ray objects_along_ray( const Ray_3& r) const {
     return Objects_along_ray( *this, r);
@@ -456,31 +457,24 @@ public:
     Unique_hash_map< Halffacet_handle, bool> f_mark(false);
     for( typename Objects_around_segment::Iterator oar = objects.begin();
          oar != objects.end(); ++oar) {
-      for( typename Object_list::const_iterator o = (*oar).begin();
-           o != (*oar).end(); ++o) { // TODO: implement operator->(...)
-        Vertex_handle v;
-        Halfedge_handle e;
-        Halffacet_handle f;
-        if( CGAL::assign( v, *o)) {
-          if( !v_mark[v]) {
-            O.push_back(*o);
-            v_mark[v] = true;
-          }
+      Node_handle node = oar.get_node();
+      for(Vertex_const_iterator vi=node->vertices_begin(); vi!=node->vertices_end(); ++vi) {
+        if( !v_mark[*vi]) {
+          O.push_back(make_object(*vi));
+          v_mark[*vi] = true;
         }
-        else if( CGAL::assign( e, *o)) {
-          if( !e_mark [e]) {
-            O.push_back(*o);
-            e_mark[e] = true;
-          }
+      }
+      for(Halfedge_const_iterator ei=node->edges_begin(); ei!=node->edges_end(); ++ei) {
+        if( !e_mark [*ei]) {
+          O.push_back(make_object(*ei));
+          e_mark[*ei] = true;
         }
-        else if( CGAL::assign( f, *o)) {
-          if( !f_mark[f]) {
-            O.push_back(*o);
-            f_mark[f] = true;
-          }
+      }
+      for(Halffacet_const_iterator fi=node->facets_begin(); fi!=node->facets_end(); ++fi) {
+        if( !f_mark[*fi]) {
+          O.push_back(make_object(*fi));
+          f_mark[*fi] = true;
         }
-        else
-          CGAL_error_msg( "wrong handle");
       }
     }
     return O;
@@ -510,12 +504,10 @@ public:
 
     void pre_visit(const Node_handle) {}
     void post_visit(const Node_handle n) {
-      typename Object_list::const_iterator o;
-      for( o = n->objects().begin();
-           o != n->objects().end(); ++o) {
-        Vertex_handle v;
-        if( CGAL::assign( v, *o))
-          b.extend(v->point());
+      for(Vertex_const_iterator vi = n->vertices_begin();
+           vi != n->vertices_end(); ++vi) {
+        Vertex_handle v = *vi;
+        b.extend(v->point());
       }
     }
 
@@ -730,11 +722,6 @@ Node_handle locate_cell_containing( const Point_3& p, const Node_handle node) co
   if(side == ON_ORIENTED_BOUNDARY)
     side = ON_NEGATIVE_SIDE;
   return locate_cell_containing(p, get_child_by_side(node, side));
-}
-
-const Object_list& locate( const Point_3& p, const Node_handle node) const {
-  CGAL_precondition( node != nullptr);
-  return locate_cell_containing( p, node)->objects();
 }
 
 bool is_point_on_cell( const Point_3& p, const Node_handle target, const Node_handle current) const {
