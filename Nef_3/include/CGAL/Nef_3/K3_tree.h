@@ -753,6 +753,9 @@ bool is_point_on_cell( const Point_3& p, const Node_handle target, const Node_ha
 
 };
 
+template <typename Traits>
+Traits K3_tree<Traits>::traits;
+
 } //namespace CGAL
 
 #endif // CGAL_NEF_K3_TREE_H
