@@ -36,20 +36,25 @@ class Compare_points {
   Compare_points(Coordinate c) : coord(c) {
     CGAL_assertion( c >= 0 && c <=2);
   }
-  CGAL::Comparison_result operator()(const Point_3& p1, const Point_3& p2) {
+  Oriented_side operator()(const Point_3& p1, const Point_3& p2) {
+    Comparison_result cr;
     switch(coord) {
     case 0:
       CGAL_NEF_TRACEN("compare_x " << p1 << ", " << p2 << "=" << (int) CGAL::compare_x(p1, p2));
-      return CGAL::compare_x(p1, p2);
+      cr = CGAL::compare_x(p1, p2);
+      break;
     case 1:
       CGAL_NEF_TRACEN("compare_y " << p1 << ", " << p2 << "=" << (int) CGAL::compare_y(p1, p2));
-      return CGAL::compare_y(p1, p2);
+      cr = CGAL::compare_y(p1, p2);
+      break;
     case 2:
       CGAL_NEF_TRACEN("compare_z " << p1 << ", " << p2 << "=" << (int) CGAL::compare_z(p1, p2));
-      return CGAL::compare_z(p1, p2);
+      cr =  CGAL::compare_z(p1, p2);
+      break;
     default: CGAL_error();
     }
-    return CGAL::EQUAL;
+    return cr == LARGER ? ON_POSITIVE_SIDE :
+           cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
   }
 private:
   Coordinate coord;
@@ -76,10 +81,10 @@ class Side_of_plane {
 #ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
   typedef typename Kernel::RT RT;
 #endif
-  typedef Compare_points<Kernel, int> Compare;
   static constexpr Oriented_side unknown_side = static_cast<Oriented_side>(-2);
 
 public:
+  typedef Compare_points<Kernel, int> Compare;
 #ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
   Side_of_plane(const Point_3& p, int c, bool rc = false) : reference_counted(rc), coord(c), pop(p) {}
 #else
@@ -145,8 +150,8 @@ public:
 template <class SNC_decorator>
 Oriented_side
 Side_of_plane<SNC_decorator>::operator()(Vertex_handle v) {
-Comparison_result cr;
 #ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
+  Comparison_result cr;
   if(reference_counted) {
     if(!OnSideMapRC.is_defined(&(v->point().hw())))
       switch(coord) {
@@ -173,9 +178,7 @@ Comparison_result cr;
   Oriented_side& side = OnSideMap[v];
   if(side == unknown_side) {
     Compare compare(coord);
-    cr = compare(v->point(), pop);
-    side = cr == LARGER ? ON_POSITIVE_SIDE :
-           cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
+    side = compare(v->point(), pop);
   }
   return side;
 #ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING

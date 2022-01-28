@@ -97,11 +97,12 @@ typedef typename Traits::Side_of_plane Side_of_plane;
 typedef typename Traits::Kernel Kernel;
 typedef typename Kernel::RT RT;
 typedef typename Kernel::FT FT;
+typedef int Coordinate;
 
 typedef Smaller_than<
   Kernel,
   Vertex_handle,
-  int> Smaller;
+  Coordinate> Smaller;
 
   class Node  {
   friend class K3_tree<Traits>;
@@ -119,8 +120,8 @@ public:
           object_list.push_back(make_object(*fi));
   }
 
-  Node(Node_handle l, Node_handle r, const Plane_3& pl) :
-    left_node(l), right_node(r), splitting_plane(pl)
+  Node(Node_handle l, Node_handle r, const Point_3& p, Coordinate c) :
+    left_node(l), right_node(r), point_on_plane(p), coord(c)
   {
   }
 
@@ -132,7 +133,25 @@ public:
 
   Node_handle left() const { return left_node; }
   Node_handle right() const { return right_node; }
-  const Plane_3& plane() const { return splitting_plane; }
+  Oriented_side side(const Point_3 p){
+    typedef typename Traits::Side_of_plane::Compare Compare;
+    Compare compare(coord);
+    return compare(p, point_on_plane);
+  }
+  void divide_segment_by_plane(const Segment_3& s,
+                              Segment_3& s1, Segment_3& s2) {
+    Plane_3 pl=construct_splitting_plane(point_on_plane,coord,typename Traits::Kernel::Kernel_tag());
+    Object o = traits.intersect_object()( pl, s);
+    Point_3 ip;
+    CGAL_assertion( CGAL::assign( ip, o));
+    CGAL::assign( ip, o);
+    ip = normalized(ip);
+    s1 = Segment_3( s.source(), ip);
+    s2 = Segment_3( ip, s.target());
+    CGAL_assertion( s1.target() == s2.source());
+    CGAL_assertion( s1.direction() == s.direction());
+    CGAL_assertion( s2.direction() == s.direction());
+  }
   const Object_list& objects() const { return object_list; }
 
   void transform(const Aff_transformation_3& t) {
@@ -140,7 +159,7 @@ public:
         CGAL_assertion(right_node != nullptr);
         left_node->transform(t);
          right_node->transform(t);
-          splitting_plane = splitting_plane.transform(t);
+         point_on_plane = point_on_plane.transform(t);
     }
   }
 
@@ -150,7 +169,7 @@ public:
       return;
     }
 
-    Side_of_plane sop(splitting_plane.point(), depth%3);
+    Side_of_plane sop(point_on_plane, depth%3);
     Oriented_side side = sop(f);
     if( side == ON_NEGATIVE_SIDE || side == ON_ORIENTED_BOUNDARY)
       left_node->add_facet(f, depth+1);
@@ -164,7 +183,7 @@ public:
       return;
     }
 
-    Side_of_plane sop(splitting_plane.point(), depth%3);
+    Side_of_plane sop(point_on_plane, depth%3);
     Oriented_side side = sop(e);
     if( side == ON_NEGATIVE_SIDE || side == ON_ORIENTED_BOUNDARY)
       left_node->add_edge(e, depth+1);
@@ -178,7 +197,7 @@ public:
       return;
     }
 
-    Side_of_plane sop(splitting_plane.point(), depth%3);
+    Side_of_plane sop(point_on_plane, depth%3);
     Oriented_side side = sop(v);
     if( side == ON_NEGATIVE_SIDE || side == ON_ORIENTED_BOUNDARY)
       left_node->add_vertex(v, depth+1);
@@ -208,7 +227,8 @@ private:
 
   Node_handle left_node;
   Node_handle right_node;
-  Plane_3 splitting_plane;
+  Point_3 point_on_plane;
+  Coordinate coord;
   Object_list object_list;
 };
 
@@ -221,8 +241,6 @@ public:
   {
    public:
     class Iterator;
-  protected:
-    Traits traits;
     Node_handle root_node;
     Segment_3 segment;
     bool initialized;
@@ -254,7 +272,6 @@ public:
     protected:
       std::list<Candidate> S;
       Node_handle node;
-      Traits traits;
       CGAL_assertion_code( Segment_3 prev_segment;)
       CGAL_assertion_code( bool first_segment;)
     public:
@@ -299,8 +316,8 @@ else {
       CGAL_NEF_TRACEN("find next intersected cell: segment: "<<s);
       CGAL_NEF_TRACEN("find next intersected cell: node plane: "<<n->plane() <<
              ", point: "<<n->plane().point());
-      Oriented_side src_side = n->plane().oriented_side(s.source());
-      Oriented_side tgt_side = n->plane().oriented_side(s.target());
+      Oriented_side src_side = n->side(s.source());
+      Oriented_side tgt_side = n->side(s.target());
       if( src_side == ON_ORIENTED_BOUNDARY && tgt_side == ON_ORIENTED_BOUNDARY)
         src_side = tgt_side = ON_NEGATIVE_SIDE;
       else if( src_side == ON_ORIENTED_BOUNDARY)
@@ -311,7 +328,7 @@ else {
         S.push_front( Candidate( get_child_by_side( n, src_side), s));
       else {
         Segment_3 s1, s2;
-        divide_segment_by_plane( s, n->plane(), s1, s2);
+        n->divide_segment_by_plane( s, s1, s2);
         S.push_front( Candidate( get_child_by_side( n, tgt_side), s2)); // cell on target pushed first
         S.push_front( Candidate( get_child_by_side( n, src_side), s1));
       }
@@ -332,29 +349,12 @@ else {
         CGAL_assertion( node != nullptr);
         return node;
       }
-
-void divide_segment_by_plane( Segment_3 s, Plane_3 pl,
-                              Segment_3& s1, Segment_3& s2) {
-  Object o = traits.intersect_object()( pl, s);
-  Point_3 ip;
-  CGAL_assertion( CGAL::assign( ip, o));
-  CGAL::assign( ip, o);
-  ip = normalized(ip);
-  s1 = Segment_3( s.source(), ip);
-  s2 = Segment_3( ip, s.target());
-  CGAL_assertion( s1.target() == s2.source());
-  CGAL_assertion( s1.direction() == s.direction());
-  CGAL_assertion( s2.direction() == s.direction());
-}
-
     };
   };
 
   class Objects_along_ray : public Objects_around_segment
   {
     typedef Objects_around_segment Base;
-  protected:
-    Traits traits;
   public:
     Objects_along_ray( const K3_tree& k, const Ray_3& r) {
       CGAL_NEF_TRACEN("Objects_along_ray: input ray: "<<r);
@@ -384,7 +384,7 @@ private:
 #ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
   bool reference_counted;
 #endif
-  Traits traits;
+  static Traits traits;
 
 
   Node_handle root;
@@ -640,7 +640,7 @@ Node_handle build_kdtree(Vertex_list& V, Halfedge_list& E, Halffacet_list& F,
 
   Node_handle left_node = build_kdtree(V1, E1, F1, depth + 1);
   Node_handle right_node = build_kdtree(V2, E2, F2, depth + 1);
-  nodes.push_back(Node(left_node, right_node, construct_splitting_plane(point_on_plane, coord, typename Traits::Kernel::Kernel_tag())));
+  nodes.push_back(Node(left_node, right_node, point_on_plane, coord));
   return &(nodes.back());
 }
 
@@ -726,7 +726,7 @@ Node_handle locate_cell_containing( const Point_3& p, const Node_handle node) co
   if( node->is_leaf())
     return node;
 
-  Oriented_side side = node->plane().oriented_side(p);
+  Oriented_side side = node->side(p);
   if(side == ON_ORIENTED_BOUNDARY)
     side = ON_NEGATIVE_SIDE;
   return locate_cell_containing(p, get_child_by_side(node, side));
@@ -741,7 +741,7 @@ bool is_point_on_cell( const Point_3& p, const Node_handle target, const Node_ha
   CGAL_precondition( target != nullptr && current != nullptr);
   if( current->is_leaf())
     return (current == target);
-  Oriented_side side = current->plane().oriented_side(p);
+  Oriented_side side = current->side(p);
   if( side == ON_NEGATIVE_SIDE)
     return is_point_on_cell( p, target, current->left());
   else if( side == ON_POSITIVE_SIDE)
