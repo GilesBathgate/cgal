@@ -7,6 +7,7 @@
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Unique_hash_map.h>
+#include <CGAL/Unique_hash_map-contender.h>
 
 #include <CGAL/Timer.h>
 #include<boost/range/iterator_range.hpp>
@@ -49,6 +50,12 @@ Point_3 lookup(Map& sm,vertex_descriptor vh){
 template <typename X, typename Y>
 Point_3 lookup(CGAL::Unique_hash_map<X,Y>& sm,vertex_descriptor vh){
     const CGAL::Unique_hash_map<X,Y>& const_sm = sm;
+    return const_sm[vh];
+}
+
+template <typename X, typename Y>
+Point_3 lookup(CGAL::Unique_hash_map_contender<X,Y>& sm,vertex_descriptor vh){
+    const CGAL::Unique_hash_map_contender<X,Y>& const_sm = sm;
     return const_sm[vh];
 }
 
@@ -122,7 +129,7 @@ void  fct(int ii, int jj)
   typedef std::unordered_map<vertex_descriptor,Point_3> SUM;
   typedef boost::unordered_map<vertex_descriptor,Point_3> BUM;
   typedef CGAL::Unique_hash_map<vertex_descriptor, Point_3> UHM;
-
+  typedef CGAL::Unique_hash_map_contender<vertex_descriptor, Point_3> UHMC;
   Mesh mesh1;
   VPM vpm1 = get(CGAL::vertex_point,mesh1);
   Vertex_list V1;
@@ -137,12 +144,14 @@ void  fct(int ii, int jj)
     std::cerr << std::endl << ii << " items and queries (repeated " << jj << " times)" << std::endl;
 
   int temp;
-  int res = fct<SM>(ii,jj, V1,V2, vpm1, "std::map             " );
-  temp = fct<SUM>(ii,jj,V1,V2, vpm1, "std::unordered_map   " );
+  int res = fct<SM>(ii,jj, V1,V2, vpm1, "std::map                       " );
+  temp = fct<SUM>(ii,jj,V1,V2, vpm1,    "std::unordered_map             " );
   if(temp != res){ std::cout << temp << " != " << res << std::endl;}
-  temp = fct<BUM>(ii,jj, V1,V2, vpm1, "boost::unordered_map " );
+  temp = fct<BUM>(ii,jj, V1,V2, vpm1,   "boost::unordered_map           " );
   if(temp != res){ std::cout << temp << " != " << res << std::endl;}
-  temp = fct<UHM>(ii,jj,V1,V2, vpm1, "CGAL::Unique_hash_map" );
+  temp = fct<UHM>(ii,jj,V1,V2, vpm1,    "CGAL::Unique_hash_map          " );
+  if(temp != res){ std::cout << temp << " != " << res << std::endl;}
+  temp = fct<UHMC>(ii,jj, V1,V2, vpm1,  "CGAL::Unique_hash_map_contender" );
   if(temp != res){ std::cout << temp << " != " << res << std::endl;}
 }
 
