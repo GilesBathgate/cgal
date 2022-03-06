@@ -23,6 +23,7 @@
 #include <CGAL/Unique_hash_map.h>
 #include <CGAL/Timer.h>
 #include <string>
+#include <mutex>
 
 
 #undef CGAL_NEF_DEBUG
@@ -205,11 +206,13 @@ public:
   }
 
   virtual void evaluate() const {
+    std::lock_guard<std::mutex> guard(mutex);
     if(!candidate_provider)
       candidate_provider = new SNC_candidate_provider(this->sncp());
   }
 
   virtual void transform(const Aff_transformation_3& t) {
+    std::lock_guard<std::mutex> guard(mutex);
     if(candidate_provider)
       candidate_provider->transform(t);
   }
@@ -719,6 +722,7 @@ public:
 
 private:
   mutable SNC_candidate_provider* candidate_provider;
+  mutable std::mutex mutex;
   SNC_intersection is;
 };
 
