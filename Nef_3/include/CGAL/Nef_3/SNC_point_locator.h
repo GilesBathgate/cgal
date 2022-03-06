@@ -104,6 +104,8 @@ public:
 
   virtual void initialize(SNC_structure* W) = 0;
 
+  virtual void evaluate() const = 0;
+
   virtual Self* clone() const = 0;
 
   virtual void transform(const Aff_transformation_3& t) = 0;
@@ -202,6 +204,11 @@ public:
     return new Self;
   }
 
+  virtual void evaluate() const {
+    if(!candidate_provider)
+      candidate_provider = new SNC_candidate_provider(this->sncp());
+  }
+
   virtual void transform(const Aff_transformation_3& t) {
     if(candidate_provider)
       candidate_provider->transform(t);
@@ -215,8 +222,7 @@ public:
 
   virtual Object_handle shoot(const Ray_3& ray, int mask=255) const {
 
-    if(!candidate_provider)
-      candidate_provider = new SNC_candidate_provider(this->sncp());
+    evaluate();
 
     CGAL_NEF_TIMER(rs_t.start());
     _CGAL_NEF_TRACEN( "shooting: "<<ray);
@@ -300,8 +306,7 @@ public:
 
   virtual Object_handle locate( const Point_3& p) const {
 
-    if(!candidate_provider)
-      candidate_provider = new SNC_candidate_provider(this->sncp());
+    evaluate();
 
     if(Infi_box::extended_kernel()) {
     CGAL_NEF_TIMER(pl_t.start());
@@ -532,8 +537,7 @@ public:
   virtual void intersect_with_edges_and_facets( Halfedge_handle e0,
         const typename SNC_point_locator::Intersection_call_back& call_back) const {
 
-    if(!candidate_provider)
-      candidate_provider = new SNC_candidate_provider(this->sncp());
+    evaluate();
 
     CGAL_NEF_TIMER(it_t.start());
     _CGAL_NEF_TRACEN( "intersecting edge: "<<&*e0<<' '<<Segment_3(e0->source()->point(),
@@ -586,8 +590,7 @@ public:
   virtual void intersect_with_edges( Halfedge_handle e0,
     const typename SNC_point_locator::Intersection_call_back& call_back) const {
 
-    if(!candidate_provider)
-      candidate_provider = new SNC_candidate_provider(this->sncp());
+    evaluate();
 
     CGAL_NEF_TIMER(it_t.start());
     _CGAL_NEF_TRACEN( "intersecting edge: "<<&*e0<<' '<<Segment_3(e0->source()->point(),
@@ -629,8 +632,7 @@ public:
   virtual void intersect_with_facets( Halfedge_handle e0,
     const typename SNC_point_locator::Intersection_call_back& call_back) const {
 
-    if(!candidate_provider)
-      candidate_provider = new SNC_candidate_provider(this->sncp());
+    evaluate();
 
     CGAL_NEF_TIMER(it_t.start());
 
