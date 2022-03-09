@@ -83,7 +83,7 @@ public:
 #ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
   Side_of_plane(const Point_3& p, int c, bool rc = false) : reference_counted(rc), coord(c), pop(p) {}
 #else
-  Side_of_plane(const Point_3& p, int c) : OnSideMap(unknown_side), coord(c), pop(p) {}
+  Side_of_plane(int num_vertices, const Point_3& p, int c) : OnSideMap(unknown_side, num_vertices), coord(c), pop(p) {}
 #endif
 
   Oriented_side operator()(Vertex_handle v);

@@ -150,7 +150,7 @@ public:
       return;
     }
 
-    Side_of_plane sop(splitting_plane.point(), depth%3);
+    Side_of_plane sop(f->number_of_vertices(), splitting_plane.point(), depth%3);
     Oriented_side side = sop(f);
     if( side == ON_NEGATIVE_SIDE || side == ON_ORIENTED_BOUNDARY)
       left_node->add_facet(f, depth+1);
@@ -164,7 +164,7 @@ public:
       return;
     }
 
-    Side_of_plane sop(splitting_plane.point(), depth%3);
+    Side_of_plane sop(2, splitting_plane.point(), depth%3);
     Oriented_side side = sop(e);
     if( side == ON_NEGATIVE_SIDE || side == ON_ORIENTED_BOUNDARY)
       left_node->add_edge(e, depth+1);
@@ -178,7 +178,7 @@ public:
       return;
     }
 
-    Side_of_plane sop(splitting_plane.point(), depth%3);
+    Side_of_plane sop(1, splitting_plane.point(), depth%3);
     Oriented_side side = sop(v);
     if( side == ON_NEGATIVE_SIDE || side == ON_ORIENTED_BOUNDARY)
       left_node->add_vertex(v, depth+1);
@@ -604,7 +604,7 @@ Node_handle build_kdtree(Vertex_list& V, Halfedge_list& E, Halffacet_list& F,
 #ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
   Side_of_plane sop(point_on_plane, coord, reference_counted);
 #else
-  Side_of_plane sop(point_on_plane, coord);
+  Side_of_plane sop(V.size(), point_on_plane, coord);
 #endif
 
   Vertex_list V1,V2;

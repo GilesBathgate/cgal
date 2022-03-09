@@ -23,6 +23,7 @@
 #include <sstream>
 #include <CGAL/IO/Verbose_ostream.h>
 #include <CGAL/Nef_3/SNC_iteration.h>
+#include <CGAL/circulator.h>
 
 #undef CGAL_NEF_DEBUG
 #define CGAL_NEF_DEBUG 83
@@ -44,6 +45,11 @@ class Halffacet_base  {
     Halffacet_cycle_iterator;
   typedef typename Refs::Halffacet_cycle_const_iterator
     Halffacet_cycle_const_iterator;
+  typedef typename Refs::SHalfedge_around_facet_circulator
+    SHalfedge_around_facet_circulator;
+  typedef typename Refs::Size_type
+    Size_type;
+
 
   Plane_3              supporting_plane_;
   Mark                 mark_;
@@ -105,6 +111,21 @@ class Halffacet_base  {
       { return boundary_entry_objects_.begin(); }
       Halffacet_cycle_const_iterator facet_cycles_end() const
       { return boundary_entry_objects_.end(); }
+
+      Size_type number_of_vertices()
+      {
+        Size_type count = 0;
+        Halffacet_cycle_iterator fci;
+        for(fci=facet_cycles_begin(); fci!=facet_cycles_end(); ++fci) {
+          if(fci.is_shalfedge()) {
+            SHalfedge_around_facet_circulator s(fci), e(s);
+            CGAL_For_all(s,e) {
+              ++count;
+            }
+          }
+        }
+        return count;
+      }
 
       bool is_twin() const { return (&*twin_ < this); }
 
