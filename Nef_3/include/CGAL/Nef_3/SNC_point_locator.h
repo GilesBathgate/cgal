@@ -388,25 +388,20 @@ public:
 
     for(;o!=candidates.end();++o) {
       if( CGAL::assign( e, *o)) {
-        Segment_3 ss(e->source()->point(),e->twin()->source()->point());
-        CGAL_NEF_TRACEN("test edge " << e->source()->point() << "->" << e->twin()->source()->point());
-        if (is.does_contain_internally(ss, p)) {
-        _CGAL_NEF_TRACEN("found on edge "<< ss);
-          return make_object(e);
+        if(e->source() != v && e->twin()->source() != v) {
+          Segment_3 ss(e->source()->point(),e->twin()->source()->point());
+          CGAL_NEF_TRACEN("test edge " << e->source()->point() << "->" << e->twin()->source()->point());
+          if (is.does_contain_internally(ss, p)) {
+          _CGAL_NEF_TRACEN("found on edge "<< ss);
+            return make_object(e);
+          }
+          if(is.does_intersect_internally(s, ss, ip)) {
+            s = Segment_3(p, normalized(ip));
+            result = make_object(e);
+          }
         }
-        if((e->source() != v)  && (e->twin()->source() != v) && is.does_intersect_internally(s, ss, ip)) {
-          s = Segment_3(p, normalized(ip));
-          result = make_object(e);
-        }
-
       } else
       if( CGAL::assign( f, *o)) {
-        CGAL_NEF_TRACEN("test facet " << f->plane());
-        if (is.does_contain_internally(f,p) ) {
-          _CGAL_NEF_TRACEN("found on facet...");
-          return make_object(f);
-        }
-
         // We next check if v is a vertex on the face to avoid a geometric test
         bool v_vertex_of_f = false;
         Halffacet_cycle_iterator fci;
@@ -421,11 +416,17 @@ public:
             }
           }
         }
+        if(!v_vertex_of_f) {
+          CGAL_NEF_TRACEN("test facet " << f->plane());
+          if ( is.does_contain_internally(f,p) ) {
+            _CGAL_NEF_TRACEN("found on facet...");
+            return make_object(f);
+          }
 
-
-        if( (! v_vertex_of_f) &&  is.does_intersect_internally(s,f,ip) ) {
-          s = Segment_3(p, normalized(ip));
-          result = make_object(f);
+          if( is.does_intersect_internally(s,f,ip) ) {
+            s = Segment_3(p, normalized(ip));
+            result = make_object(f);
+          }
         }
       }
       else CGAL_error_msg( "wrong handle type");
