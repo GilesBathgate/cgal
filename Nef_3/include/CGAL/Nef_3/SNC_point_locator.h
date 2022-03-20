@@ -384,37 +384,10 @@ public:
 
     CGAL::assign(v, result);
     Segment_3 s(p,v->point());
-    // bool first = true;
     Point_3 ip;
 
-    /*
-    // TODO: das geht effizienter
-    Object_list_iterator of(o);
-    while(of != candidates.end() && assign(e, *of)) ++of;
-
-    typename SNC_structure::SHalfedge_iterator sei;
-    for(sei=v->shalfedges_begin(); sei!=v->shalfedges_end(); ++sei){
-      if(sei->is_twin()) continue;
-      Halffacet_handle fout = sei->facet();
-      if(fout->is_twin()) fout = fout->twin();
-      Object_list_iterator ofc(of);
-      for(;ofc!=candidates.end();++ofc) {
-        if(CGAL::assign(f,*ofc)) {
-          if(f == fout->twin())
-            std::cerr << "shit" << std::endl;
-          if(f == fout) {
-            Object_list_iterator oe(ofc);
-            --ofc;
-            candidates.erase(oe);
-          }
-        }
-      }
-    }
-    */
     for(;o!=candidates.end();++o) {
       if( CGAL::assign( e, *o)) {
-        //        if(first &&
-        //           (e->source() == v  || e->twin()->source() == v)) continue;
         Segment_3 ss(e->source()->point(),e->twin()->source()->point());
         CGAL_NEF_TRACEN("test edge " << e->source()->point() << "->" << e->twin()->source()->point());
         if (is.does_contain_internally(ss, p)) {
@@ -422,7 +395,6 @@ public:
           return make_object(e);
         }
         if((e->source() != v)  && (e->twin()->source() != v) && is.does_intersect_internally(s, ss, ip)) {
-          // first = false;
           s = Segment_3(p, normalized(ip));
           result = make_object(e);
         }
@@ -459,30 +431,9 @@ public:
       else CGAL_error_msg( "wrong handle type");
     }
 
-    //CGAL_warning("altered code in SNC_point_locator");
-    /*
-      Halffacet_iterator fc;
-      CGAL_forall_facets(fc, *this->sncp()) {
-        CGAL_assertion(!is.does_intersect_internally(s,f,ip));
-      }
-
-      Halfedge_iterator ec;
-      CGAL_forall_edges(ec, *this->sncp()) {
-        Segment_3 ss(ec->source()->point(), ec->twin()->source()->point());
-        CGAL_assertion(!is.does_intersect_internally(s,ss,ip));
-      }
-
-      Vertex_iterator vc;
-      CGAL_forall_vertices(vc, *this->sncp()) {
-        std::cerr << "test vertex " << vc->point() << std::endl;
-        CGAL_assertion(vc->point() == s.target() || !s.has_on(vc->point()));
-      }
-    */
-
     if( CGAL::assign( v, result)) {
       _CGAL_NEF_TRACEN("vertex hit, obtaining volume..." << v->point());
 
-      //CGAL_warning("altered code in SNC_point_locator");
       SM_point_locator L(&*v);
       //      Object_handle so = L.locate(s.source()-s.target(), true);
       Object_handle so = L.locate(s.source()-s.target());
@@ -491,27 +442,7 @@ public:
         return make_object(sf->volume());
       CGAL_error_msg( "wrong handle type");
       return Object_handle();
-/*
-      SHalfedge_handle se;
-      CGAL_assertion(CGAL::assign(se,so));
-      CGAL_NEF_TRACEN("intersect segment " << s << " with edges");
-      for(;ox!=candidates.end();++ox) {
-        if(!CGAL::assign(e,*ox)) continue;
-        CGAL_NEF_TRACEN("test edge " << e->source()->point() << "->" << e->twin()->source()->point());
-        if(is.does_intersect_internally(s,Segment_3(e->source()->point(),e->twin()->source()->point()),ip)) {
-          s = Segment_3(p, normalized(ip));
-          result = make_object(e);
-        }
-      }
-      CGAL_assertion(CGAL::assign(e,result));
-      CGAL::assign(e,result);
-      f = get_visible_facet(e, Ray_3(p, s.target()));
-      if( f != Halffacet_handle())
-        return f->incident_volume();
-      SM_decorator SD(&*v); // now, the vertex has no incident facets
-      CGAL_assertion( SD.number_of_sfaces() == 1);
-      return SD.sfaces_begin()->volume();
-*/
+
     } else if( CGAL::assign( f, result)) {
       _CGAL_NEF_TRACEN("facet hit, obtaining volume...");
       if(f->plane().oriented_side(p) == ON_NEGATIVE_SIDE)
