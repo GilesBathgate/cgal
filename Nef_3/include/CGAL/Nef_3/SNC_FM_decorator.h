@@ -231,7 +231,7 @@ class SmallerXYZ {
  public:
   SmallerXYZ(Halffacet_geometry& Gin) : G(Gin) {}
 
-  bool operator()(SHalfedge_handle se, SHalfedge_handle min, bool /*init*/) {
+  bool operator()(SHalfedge_handle se, SHalfedge_handle min) {
     if(se->twin()->source()->twin()->source() == min->twin()->source()->twin()->source()) {
       Point_3 p1 = se->source()->source()->point(),
         p2 = se->twin()->source()->twin()->source()->point(),
@@ -455,12 +455,11 @@ create_facet_objects(const Plane_3& plane_supporting_facet,
     SHalfedge_around_facet_circulator hfc(e),hend(hfc);
     FacetCycle[hfc]=i;
     SHalfedge_handle e_min = e;
-    bool init=false;
+
     CGAL_NEF_TRACEN("\n  facet cycle numbering (up) "<<i);
     CGAL_For_all(hfc,hend) {
       FacetCycle[hfc]=i; // assign face cycle number
-      if(smallerXYZ(hfc, e_min, init)) {
-        init = true;
+      if(smallerXYZ(hfc, e_min)) {
         e_min = hfc;
       }
 
