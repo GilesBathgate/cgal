@@ -175,15 +175,13 @@ class Halffacet_geometry {
   typedef std::pair<Point_2,Point_2>  Segment_2;
 
  private:
-  // the underlying plane:
-  Plane_3 h;
 
-  Point_3 above(const Point_3& p) const
-  { return p + h.orthogonal_vector(); }
+  Point_3 above;
 
  public:
 
-Halffacet_geometry(const Plane_3& hi) : h(hi) {}
+Halffacet_geometry(const Plane_3& h, const Point_3& p)
+  : above(p + h.orthogonal_vector()) {}
 
 Point_2 source(const Segment_2& s) const  { return s.first; }
 Point_2 target(const Segment_2& s) const  { return s.second; }
@@ -197,7 +195,7 @@ Segment_2 construct_segment(const Point_2& p1, const Point_2& p2) const
 
 int orientation(const Point_2& p1, const Point_2& p2, const Point_2& p3) const
 { return static_cast<int>(
-    CGAL::orientation(p1.point(),p2.point(),p3.point(),above(p1.point()))); }
+    CGAL::orientation(p1.point(),p2.point(),p3.point(),above)); }
 
 int orientation(const Segment_2& s, const Point_2& p) const {
     if(source(s).vertex() == p.vertex() ||
@@ -220,7 +218,7 @@ Point_2 intersection(const Segment_2& s1, const Segment_2& s2) const
   return target(s1); }
 
 bool left_turn(const Point_3& p1, const Point_3& p2, const Point_3& p3) const
-{ return CGAL::orientation(p1,p2,p3,above(p1)) == CGAL::POSITIVE; }
+{ return CGAL::orientation(p1,p2,p3,above) == CGAL::POSITIVE; }
 
 }; // Halffacet_geometry
 
@@ -376,7 +374,7 @@ public:
   Halffacet_cycle_iterator facet_cycles_end()   const
   { return f_->facet_cycles_end(); }
 
-  void create_facet_objects(const Plane_3& h,
+  void create_facet_objects(const Plane_3& h, const Point_3& p,
     Object_list_iterator start, Object_list_iterator end) const;
 
 protected:
@@ -464,6 +462,7 @@ protected:
 template <typename SNC_>
 void SNC_FM_decorator<SNC_>::
 create_facet_objects(const Plane_3& plane_supporting_facet,
+                     const Point_3& point_on_plane,
   Object_list_iterator start, Object_list_iterator end) const
 { CGAL_NEF_TRACEN(">>>>>create_facet_objects "
                   << normalized(plane_supporting_facet));
@@ -488,7 +487,7 @@ create_facet_objects(const Plane_3& plane_supporting_facet,
     <Segment_iterator, Halffacet_output, Halffacet_geometry>
     Halffacet_sweep_traits;
   typedef CGAL::generic_sweep<Halffacet_sweep_traits>   Halffacet_sweep;
-  Halffacet_geometry G(plane_supporting_facet);
+  Halffacet_geometry G(plane_supporting_facet, point_on_plane);
 
   /* We first separate sedges and sloops, and fill a list of segments
      to trigger a sweep. */

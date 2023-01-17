@@ -708,7 +708,8 @@ public:
       //    progress2++;
       //      CGAL_NEF_TRACEN("  plane "<<it->first<<"             "<<(it->first).point());
       FM_decorator D(*this->sncp());
-      D.create_facet_objects(it->first,it->second.begin(),it->second.end());
+      const Plane_3& h = it->first;
+      D.create_facet_objects(h, h.point(), it->second.begin(), it->second.end());
     }
     //       CGAL_NEF_SETDTHREAD(1);
   }
@@ -1043,6 +1044,7 @@ public:
     SHalfedge_around_svertex_circulator;
 
   typedef typename SNC_structure::Plane_3 Plane_3;
+  typedef typename SNC_structure::Point_3 Point_3;
 
   using Base::make_twins;
   using Base::link_as_prev_next_pair;
@@ -1194,16 +1196,19 @@ public:
       CGAL_NEF_TRACEN("  plane "<< it->first);
       CGAL_NEF_TRACEN("  size "<< it->second.size());
       FM_decorator D(*this->sncp());
-      Plane_3 h;
       Object_handle o(*it->second.begin());
-      if(CGAL::assign(e, o))
-        h = e->circle().opposite().plane_through(e->source()->source()->point());
-      else if(CGAL::assign(l, o))
-        h = l->circle().opposite().plane_through(l->incident_sface()->center_vertex()->point());
-      else
+      Point_3 p;
+      Plane_3 h;
+      if(CGAL::assign(e, o)) {
+        p = e->source()->source()->point();
+        h = e->circle().opposite().plane_through(p);
+      } else if(CGAL::assign(l, o)) {
+        p = l->incident_sface()->center_vertex()->point();
+        h = l->circle().opposite().plane_through(p);
+      } else
         CGAL_error_msg( "wrong handle");
 
-      D.create_facet_objects(h,it->second.begin(),it->second.end());
+      D.create_facet_objects(h, p, it->second.begin(), it->second.end());
     }
     //       CGAL_NEF_SETDTHREAD(1);
   }
