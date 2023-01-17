@@ -243,66 +243,6 @@ class SmallerXYZ {
   }
 };
 
-/*
-template<typename SHalfedge_handle, typename EK>
-class SmallerXYZ<CGAL::Lazy_kernel<EK>, SHalfedge_handle> {
-
-  typedef CGAL::Lazy_kernel<EK> Kernel;
-  typedef typename Kernel::Point_3  Point_3;
- public:
-  SmallerXYZ() {}
-
-  bool point_in_positive_direction_3(const Point_3& p) const {
-    if(p.x() < 0) return false;
-    if(p.x() > 0) return true;
-    if(p.y() < 0) return false;
-    if(p.y() > 0) return true;
-    return p.z() > 0;
-  }
-
-  bool operator()(const SHalfedge_handle se, const Point_3 min, bool) {
-    return
-      //      (point_in_positive_direction_3(se->next()->source()->point()) &&
-      //            point_in_positive_direction_3(se->next()->twin()->source()->point()) &&
-      //            (!init ||
-             CGAL::lexicographically_xyz_smaller(se->twin()->source()->twin()->source()->point(),
-                                                 min);
-  }
-};
-*/
-
-/*
-template<class K2, typename EK, typename SHalfedge_handle>
-class SmallerXYZ<CGAL::Lazy_kernel<EK>, K2, SHalfedge_handle> {
-
-  typedef typename K2::Point_3  Point_3;
- public:
-  SmallerXYZ() {}
-
-  bool point_in_positive_direction_2(const Point_3& p) const {
-    if(p.y() < 0) return false;
-    if(p.y() > 0) return true;
-    return p.z() > 0;
-  }
-
-  bool point_in_positive_direction_3(const Point_3& p) const {
-    if(p.x() < 0) return false;
-    if(p.x() > 0) return true;
-    if(p.y() < 0) return false;
-    if(p.y() > 0) return true;
-    return p.z() > 0;
-  }
-
-  bool operator()(const SHalfedge_handle se, const Point_3 min, bool init) {
-    return (point_in_positive_direction_3(se->next()->source()->point()) &&
-            point_in_positive_direction_3(se->next()->twin()->source()->point()) &&
-            (!init ||
-             CGAL::lexicographically_xyz_smaller(se->twin()->source()->twin()->source()->point(),
-                                                 min)));
-  }
-};
-*/
-
 //--------------------------------------------------------------------------
 // SNC_FM_decorator
 // Note that we interpret sedges as edge uses between vertices.  We
