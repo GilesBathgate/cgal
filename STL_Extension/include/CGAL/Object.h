@@ -104,7 +104,7 @@ class Object
 #ifndef CGAL_NO_DEPRECATED_CODE
   // is_empty() is kept for backward compatibility.
   // empty() was introduced for consistency with e.g. std::vector::empty().
-  bool is_empty_not_used() const
+  bool is_empty() const
   { return empty(); }
   // The comparisons with nullptr are only there for Nef...
   bool operator==(std::nullptr_t) const
