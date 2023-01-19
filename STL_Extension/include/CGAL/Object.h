@@ -30,19 +30,19 @@
 #include <boost/variant.hpp>
 #include <boost/optional.hpp>
 #include <boost/any.hpp>
-#include <memory>
+#include <boost/type_index.hpp>
 
 namespace CGAL {
 
 class Object
 {
-    std::shared_ptr<boost::any> obj;
+    boost::any obj;
 
     // returns an any pointer from a variant
-    struct Any_from_variant : public boost::static_visitor<boost::any*> {
+    struct Any_from_variant : public boost::static_visitor<boost::any> {
       template<typename T>
-      boost::any* operator()(const T& t) const {
-        return new boost::any(t);
+      boost::any operator()(const T& t) const {
+        return boost::any(t);
       }
     };
 
@@ -61,12 +61,12 @@ class Object
     Object() : obj() { }
 
     template <class T>
-    Object(T && t, private_tag) : obj(new boost::any(std::forward<T>(t))) { }
+    Object(T && t, private_tag) : obj(std::forward<T>(t)) { }
 
     // implicit constructor from optionals containing variants
     template<BOOST_VARIANT_ENUM_PARAMS(typename T)>
     Object(const boost::optional< boost::variant<BOOST_VARIANT_ENUM_PARAMS(T) > >& t)
-      : obj( t ? boost::apply_visitor(Any_from_variant(), *t) : nullptr) { }
+      : obj( t ? boost::apply_visitor(Any_from_variant(), *t) : boost::any()) { }
 
     // implicit constructor from  variants
     template<BOOST_VARIANT_ENUM_PARAMS(typename T)>
@@ -76,7 +76,7 @@ class Object
     template <class T>
     bool assign(T &t) const
     {
-      const T* res = boost::any_cast<T>(obj.get());
+      const T* res = boost::any_cast<T>(&obj);
       if (!res) return false;
       t = *res;
       return true;
@@ -85,7 +85,7 @@ class Object
     bool
     empty() const
     {
-      return !obj;
+      return obj.empty();
     }
 
     // is_empty() is kept for backward compatibility.
@@ -105,15 +105,12 @@ class Object
     template <class T>
     bool is() const
     {
-      return obj && boost::any_cast<T>(obj.get());
+      return type() == boost::typeindex::type_id<T>().type_info();
     }
 
     const std::type_info & type() const
     {
-      if(obj)
-        return obj->type();
-      else
-        return typeid(void);
+      return obj.type();
     }
 
 #ifndef CGAL_NO_DEPRECATED_CODE
@@ -159,14 +156,14 @@ template <class T>
 inline
 const T * object_cast(const Object * o)
 {
-  return boost::any_cast<T>((o->obj).get());
+  return o ? boost::any_cast<T>(&(o->obj)) : nullptr;
 }
 
 template <class T>
 inline
 T object_cast(const Object & o)
 {
-  const T * result = boost::any_cast<T>((o.obj).get());
+  const T * result = object_cast<T>(&o);
   if (!result)
     throw Bad_object_cast();
   return *result;
