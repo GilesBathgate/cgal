@@ -268,14 +268,14 @@ public:
   void set_aux_source(unsigned int id, const Object& o)
   {
     CGAL_precondition(id < 2);
-    CGAL_precondition(!o.is_empty());
+    CGAL_precondition(!o.empty());
     m_aux_source[id] = o;
   }
 
   const Object& get_aux_source(unsigned int id)
   {
     CGAL_precondition(id < 2);
-    CGAL_precondition (!m_aux_source[id].is_empty());
+    CGAL_precondition (!m_aux_source[id].empty());
     return m_aux_source[id];
   }
 
@@ -283,7 +283,7 @@ public:
   bool get_aux_is_set(unsigned int id) const
   {
     CGAL_precondition(id < 2);
-        return (!m_aux_source[id].is_empty());
+        return (!m_aux_source[id].empty());
   }
 };
 

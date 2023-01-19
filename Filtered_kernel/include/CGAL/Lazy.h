@@ -1334,7 +1334,7 @@ make_lazy(const Object& eto)
   typedef typename LK::Exact_kernel EK;
   typedef typename LK::E2A E2A;
 
-  if (eto.is_empty())
+  if (eto.empty())
     return Object();
 
 #define CGAL_Kernel_obj(X) \
@@ -1735,7 +1735,7 @@ public:
       try {
         Lazy_object lo(new Lazy_rep_n<result_type, result_type, AC, EC, E2A, false, L1>(ac, ec, l1));
 
-        if(lo.approx().is_empty())
+        if(lo.approx().empty())
           return Object();
 
 #define CGAL_Kernel_obj(X) \
@@ -1770,7 +1770,7 @@ public:
       try {
         Lazy_object lo(new Lazy_rep_n<result_type, result_type, AC, EC, E2A, false, L1, L2>(ac, ec, l1, l2));
 
-        if(lo.approx().is_empty())
+        if(lo.approx().empty())
           return Object();
 
   #define CGAL_Kernel_obj(X) \
@@ -1826,7 +1826,7 @@ public:
       try {
         Lazy_object lo(new Lazy_rep_n<result_type, result_type, AC, EC, E2A, false, L1, L2, L3>(ac, ec, l1, l2, l3));
 
-        if(lo.approx().is_empty())
+        if(lo.approx().empty())
           return Object();
 
   #define CGAL_Kernel_obj(X) \

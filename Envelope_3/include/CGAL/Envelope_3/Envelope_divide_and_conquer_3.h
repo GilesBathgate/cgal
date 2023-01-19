@@ -811,7 +811,7 @@ protected:
     Face_handle f;
 
     const Object& o = fh->get_aux_source(id);
-    CGAL_assertion(!o.is_empty());
+    CGAL_assertion(!o.empty());
 
     // aux source of a face must be a face!
     // aux source of a halfedge can be face or halfedge
@@ -1400,7 +1400,7 @@ protected:
                           Envelope_data_iterator& begin,
                           Envelope_data_iterator& end)
   {
-    CGAL_assertion(!aux_src.is_empty());
+    CGAL_assertion(!aux_src.empty());
     Vertex_handle v;
     Halfedge_handle h;
     Face_handle f;
@@ -1427,7 +1427,7 @@ protected:
                      Envelope_data_iterator begin,
                      Envelope_data_iterator end)
   {
-    CGAL_assertion(!o.is_empty());
+    CGAL_assertion(!o.empty());
     Vertex_handle v;
     Halfedge_handle h;
     Face_handle f;
@@ -1447,7 +1447,7 @@ protected:
                       Envelope_data_iterator begin,
                       Envelope_data_iterator end)
   {
-    CGAL_assertion(!o.is_empty());
+    CGAL_assertion(!o.empty());
     Vertex_handle v;
     Halfedge_handle h;
     Face_handle f;

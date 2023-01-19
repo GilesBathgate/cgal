@@ -2206,7 +2206,7 @@ _place_and_set_point(DFace* f, const Point_2& p,
     _notify_after_split_fictitious_edge(Halfedge_handle(p_pred),
                                         Halfedge_handle((*p_pred)->next()));
   }
-  else if (obj.is_empty()) {
+  else if (obj.empty()) {
     // Create a new vertex that represents the given point.
     v = _create_boundary_vertex(p, ps_x, ps_y);
 

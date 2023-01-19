@@ -396,7 +396,7 @@ public:
                                                         h2,
                                                         s2.line(),
                                                         k);
-        if(obj.is_empty())
+        if(obj.empty())
           return o;
         Line_2 temp_l;
         if(assign(temp_l, obj))
@@ -418,7 +418,7 @@ public:
                                                         h1,
                                                         s1.line(),
                                                         k);
-        if(obj.is_empty())
+        if(obj.empty())
           return o;
         Line_2 line;
         if(assign(line, obj))
@@ -440,7 +440,7 @@ public:
       Object obj =
         half_plane_half_plane_proj_intersection(h1, s1.line(), h2, s2.line(), k);
 
-      if(obj.is_empty())
+      if(obj.empty())
         return o;
       Line_2 line;
       if(assign(line, obj))

@@ -612,7 +612,7 @@ public:
       }
 
       Object inter_obj = parent->intersection(s1,s2);
-      if (inter_obj.is_empty())
+      if (inter_obj.empty())
       {
         return o;
       }
@@ -1078,7 +1078,7 @@ public:
     // between them.
     Object inter_obj = intersection(p1, s2);
 
-    if (inter_obj.is_empty())
+    if (inter_obj.empty())
       return Object();
 
     // otherwise, if the intersection in a point, we should check if it lies
@@ -1102,7 +1102,7 @@ public:
 
       // if there is no intersection - then the triangles have no intersection
       // between them.
-      if (inter_obj.is_empty())
+      if (inter_obj.empty())
               return Object();
 
       if (assign_obj(inter_point, inter_obj))
@@ -1218,7 +1218,7 @@ public:
 
           Object inter_obj = k.intersect_2_object()(seg1_t, seg2_t);
           Assign_2 assign_2 = k.assign_2_object();
-          if (inter_obj.is_empty())
+          if (inter_obj.empty())
                   return inter_obj;
 
           Point_2 inter_point;
@@ -1395,7 +1395,7 @@ public:
 
       const Plane_3& plane = s.plane();
       Object    res = k.intersect_3_object()(plane, vl);
-      CGAL_assertion(!res.is_empty());
+      CGAL_assertion(!res.empty());
       Point_3 ip;
       CGAL_assertion(k.assign_3_object()(ip, res));
       k.assign_3_object()(ip, res);

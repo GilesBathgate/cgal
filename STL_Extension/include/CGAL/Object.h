@@ -84,14 +84,6 @@ class Object
       return obj.empty();
     }
 
-    // is_empty() is kept for backward compatibility.
-    // empty() was introduced for consistency with e.g. std::vector::empty().
-    bool
-    is_empty() const
-    {
-        return empty();
-    }
-
     // safe-bool conversion
     operator bool_type() const {
       return empty() == false ? &Object::this_type_does_not_support_comparisons : 0;
@@ -110,7 +102,11 @@ class Object
     }
 
 #ifndef CGAL_NO_DEPRECATED_CODE
-    // The comparisons with nullptr are only there for Nef...
+  // is_empty() is kept for backward compatibility.
+  // empty() was introduced for consistency with e.g. std::vector::empty().
+  bool is_empty_not_used() const
+  { return empty(); }
+  // The comparisons with nullptr are only there for Nef...
   bool operator==(std::nullptr_t) const
   {  return empty(); }
   bool operator!=(std::nullptr_t) const

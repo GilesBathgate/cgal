@@ -291,7 +291,7 @@ public:
     for (; inter_objs_it != inter_objs.end(); ++inter_objs_it)
     {
       cur_obj = *inter_objs_it;
-      CGAL_assertion(!cur_obj.is_empty());
+      CGAL_assertion(!cur_obj.empty());
       if (assign(point, cur_obj))
       {
         // intersection can be a point when the surfaces only touch each other.
@@ -530,7 +530,7 @@ public:
     for (; inter_objs_it != inter_objs.end(); ++inter_objs_it)
     {
       cur_obj = *inter_objs_it;
-      CGAL_assertion(!cur_obj.is_empty());
+      CGAL_assertion(!cur_obj.empty());
       if (assign(point, cur_obj))
       {
         // if the point is on the curve, should add it the split points
@@ -1010,7 +1010,7 @@ protected:
                                                unsigned int id)
   {
     const Object& o = fh->get_aux_source(id);
-    CGAL_assertion(!o.is_empty());
+    CGAL_assertion(!o.empty());
 
     // aux source of a face must be a face!
     // aux source of a halfedge can be face or halfedge
@@ -1226,7 +1226,7 @@ protected:
     Face_handle f;
 
     const Object& o = fh->get_aux_source(id);
-    CGAL_assertion(!o.is_empty());
+    CGAL_assertion(!o.empty());
 
     if (assign(v, o))
     {

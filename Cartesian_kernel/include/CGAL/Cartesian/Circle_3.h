@@ -77,7 +77,7 @@ public:
   CircleC3(const Sphere_3 &s1, const Sphere_3 &s2) {
     Object obj = R().intersect_3_object()(s1, s2);
     // s1,s2 must intersect
-    CGAL_kernel_precondition(!(obj.is_empty()));
+    CGAL_kernel_precondition(!(obj.empty()));
     const typename R::Circle_3* circle_ptr=object_cast<typename R::Circle_3>(&obj);
     if(circle_ptr!=nullptr)
       base = Rep(circle_ptr->diametral_sphere(), circle_ptr->supporting_plane());
@@ -94,7 +94,7 @@ public:
   CircleC3(const Plane_3 &p, const Sphere_3 &s) {
     Object obj = R().intersect_3_object()(p, s);
     // s1,s2 must intersect
-    CGAL_kernel_precondition(!(obj.is_empty()));
+    CGAL_kernel_precondition(!(obj.empty()));
     const typename R::Circle_3* circle_ptr=object_cast<typename R::Circle_3>(&obj);
     if(circle_ptr!=nullptr)
       base = Rep(circle_ptr->diametral_sphere(), circle_ptr->supporting_plane());

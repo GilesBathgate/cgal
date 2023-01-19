@@ -33,7 +33,7 @@ Object plane_half_plane_proj_intersection(const typename K::Plane_3 &h1,
 
   // intersect the two planes
   Object h_obj = k.intersect_3_object()(h1, h2);
-  if(h_obj.is_empty())
+  if(h_obj.empty())
     return Object(); // no intersection at all (parallel planes)
 
   Plane_3 p;
@@ -62,7 +62,7 @@ Object half_plane_half_plane_proj_intersection(const typename K::Plane_3 &h1,
   typedef typename K::Line_2     Line_2;
 
   Object obj = plane_half_plane_proj_intersection(h1, h2, l2, k);
-  if(obj.is_empty())
+  if(obj.empty())
     return Object();
 
   Line_2 l;
@@ -123,7 +123,7 @@ Object line_under_linear_constraint(const typename K::Line_2& l1,
     return make_object(ray);
   }
 
-  if(obj.is_empty()) // the two lines are parallel
+  if(obj.empty()) // the two lines are parallel
   {
     const Point_2& s = k.construct_point_on_2_object()(l1, 0);
     Oriented_side side = k.oriented_side_2_object()(l2, s);
@@ -155,7 +155,7 @@ Object ray_under_linear_constraint(const typename K::Ray_2&  ray,
   const Point_2& s = k.construct_point_on_2_object()(ray, 0);
   Oriented_side side = k.oriented_side_2_object()(l, s);
   Object obj = k.intersect_2_object()(ray, l);
-  if(obj.is_empty())
+  if(obj.empty())
   {
     if(side == ON_NEGATIVE_SIDE)
       return Object();
