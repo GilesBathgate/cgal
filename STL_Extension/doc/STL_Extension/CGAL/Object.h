@@ -109,6 +109,11 @@ Copy constructor.
 Object(const Object &o);
 
 /*!
+Move constructor.
+*/
+Object(Object &&o);
+
+/*!
 Implicit converting constructor for compatibility with
 `boost::variant`.
 */
@@ -133,6 +138,14 @@ Object &operator=(const Object &o);
 
 /// @}
 
+/// \name Operations
+/// @{
+/*!
+Move assignment.
+*/
+Object &operator=(Object &&o);
+
+/// @}
 
 /// \name Operations
 /// @{
