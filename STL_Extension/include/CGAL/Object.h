@@ -42,22 +42,22 @@ class Object
       }
     };
 
+    template <class T>
+    friend Object make_object(T && t);
+
     template<class T>
     friend const T* object_cast(const Object * o);
 
-    template<class T>
-    friend T object_cast(const Object & o);
+    struct private_tag{};
+
+    template <class T>
+    Object(T && t, private_tag) : obj(std::forward<T>(t)) { }
 
     typedef void (Object::*bool_type)() const;
     void this_type_does_not_support_comparisons() const {}
   public:
 
-    struct private_tag{};
-
     Object() : obj() { }
-
-    template <class T>
-    Object(T && t, private_tag) : obj(std::forward<T>(t)) { }
 
     // implicit constructor from optionals containing variants
     template<BOOST_VARIANT_ENUM_PARAMS(typename T)>
