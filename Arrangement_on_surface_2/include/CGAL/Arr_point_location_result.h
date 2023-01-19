@@ -26,6 +26,7 @@
 #define CGAL_ARR_POINT_LOCATION_VERSION 2
 #endif
 
+#include <CGAL/assertions.h>
 #include <CGAL/Object.h>
 
 #include <boost/optional.hpp>

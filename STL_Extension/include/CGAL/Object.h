@@ -22,10 +22,6 @@
 #define CGAL_OBJECT_H
 
 #include <CGAL/config.h>
-#include <CGAL/assertions.h>
-
-#include <iterator>
-#include <typeinfo>
 
 #include <boost/variant.hpp>
 #include <boost/optional.hpp>
@@ -115,10 +111,10 @@ class Object
 
 #ifndef CGAL_NO_DEPRECATED_CODE
     // The comparisons with nullptr are only there for Nef...
-  bool operator==(std::nullptr_t /*CGAL_assertion_code(n)*/) const
-  { /*CGAL_assertion(n == 0);*/ return empty(); }
-  bool operator!=(std::nullptr_t /*CGAL_assertion_code(n)*/) const
-  { /*CGAL_assertion(n == 0);*/ return !empty(); }
+  bool operator==(std::nullptr_t) const
+  {  return empty(); }
+  bool operator!=(std::nullptr_t) const
+  { return !empty(); }
 #endif // CGAL_NO_DEPRECATED_CODE
 
 };
