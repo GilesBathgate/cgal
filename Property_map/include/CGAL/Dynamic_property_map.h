@@ -21,7 +21,7 @@
 #include <memory>
 
 #include <type_traits>
-#include <unordered_map>
+#include <CGAL/unordered_flat_map.h>
 
 namespace CGAL {
 
@@ -48,18 +48,15 @@ struct Dynamic_property_map {
 
   friend reference get(const Dynamic_property_map& m, const key_type& k)
   {
-    typename Map::const_iterator it = m.map_->find(k);
-    if(it == m.map_->end()){
-      (*(const_cast<Dynamic_property_map&>(m).map_))[k] = m.default_value();
-      return m.default_value();
-    }
+    auto it = m.map_->find(k);
+    if (it == m.map_->end()) return m.default_value();
     return it->second;
   }
 
 
   friend void put(const Dynamic_property_map& m, const key_type& k, const value_type& v)
   {
-    (*(m.map_))[k] = v;
+    m.map_->insert_or_assign(k, v);
   }
 
 
@@ -69,7 +66,7 @@ struct Dynamic_property_map {
   }
 
 
-  typedef std::unordered_map<K,V> Map;
+  typedef CGAL::unordered_flat_map<K,V> Map;
   std::shared_ptr<Map> map_;
   V default_value_;
 };
