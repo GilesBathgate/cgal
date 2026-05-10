@@ -90,8 +90,7 @@ protected:
     if(assign(e, o)) {
        CGAL_NEF_TRACEN("Found edge " << e->source()->point()
                        << "->" << e->twin()->source()->point());
-      Segment_3 seg(e->source()->point(), e->twin()->source()->point());
-      SNC_intersection::does_intersect_internally(r, seg, ip);
+      SNC_intersection::does_intersect_internally(r, e, ip);
       ip = normalized(ip);
       v = C.create_from_edge(e,ip);
       pl->add_vertex(v);

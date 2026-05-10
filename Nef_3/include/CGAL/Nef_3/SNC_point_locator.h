@@ -290,8 +290,7 @@ public:
           Point_3 q;
           _CGAL_NEF_TRACEN("trying edge on "<< Segment_3(e->source()->point(),e->twin()->source()->point()));
           if ( (ray_source_vertex == Vertex_handle()) || ( (ray_source_vertex != e->source()) && (ray_source_vertex != e->twin()->source())) ) {
-            if( SNC_intersection::does_intersect_internally( ray, Segment_3(e->source()->point(),
-                                                                            e->twin()->source()->point()), q)) {
+            if( SNC_intersection::does_intersect_internally( ray, e, q)) {
               _CGAL_NEF_TRACEN("ray intersects edge on "<<q);
               _CGAL_NEF_TRACEN("prev. intersection? "<<hit);
               CGAL_assertion_code
@@ -436,7 +435,7 @@ public:
           return make_object(e);
         }
         if((e->source() != v)  && (e->twin()->source() != v) &&
-           SNC_intersection::does_intersect_internally(s, Segment_3(e->source()->point(),e->twin()->source()->point()), ip)) {
+           SNC_intersection::does_intersect_internally(s, e, ip)) {
           s = Segment_3(p, normalized(ip));
           e_res = e;
           solution = is_edge_;
@@ -530,8 +529,7 @@ private:
           ++number_of_intersection_candidates;
 #endif
           Point_3 q;
-          if(SNC_intersection::does_intersect_internally( s, Segment_3((*e)->source()->point(),
-                                                                       (*e)->twin()->source()->point()), q)) {
+          if(SNC_intersection::does_intersect_internally( s, *e, q)) {
             q = normalized(q);
             call_back( e0, *e, q);
             _CGAL_NEF_TRACEN("edge intersects edge "<<' '<<&*e<< Segment_3((*e)->source()->point(),
