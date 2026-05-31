@@ -560,10 +560,6 @@ public:
   //  CGAL_NEF_SETDTHREAD(43*31);
     CGAL_NEF_TRACEN(">>>>>link_shalfedges_to_facet_cycles");
 
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-    Point_3 p1(1,2,7), p2(p1);
-    bool reference_counted = (&(p1.hx()) == &(p2.hx()));
-#endif
 
     Halfedge_iterator e;
     CGAL_forall_edges(e,*this->sncp()) {
@@ -577,14 +573,6 @@ public:
       SHalfedge_around_svertex_circulator ce(D.first_out_edge(e)),cee(ce);
       SHalfedge_around_svertex_circulator cet(Dt.first_out_edge(et)),cete(cet);
 
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-      if(reference_counted) {
-        CGAL_For_all(cet,cete)
-          if ( &(cet->circle().a()) == &(ce->circle().opposite().a()) &&
-               cet->source()->twin() == ce->source() )
-            break;
-      } else
-#endif
         CGAL_assertion_code(bool found = false;)
         CGAL_For_all(cet,cete)
           if ( cet->circle() == ce->circle().opposite() &&
@@ -648,13 +636,8 @@ public:
     CGAL_NEF_TRACEN(">>>>>categorize_facet_cycles_and_create_facets");
 
     typedef std::list<Object_handle> Object_list;
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-    typedef std::map<Plane_3, Object_list, Plane_RT_lt>
-      Map_planes;
-#else
     typedef std::map<Plane_3, Object_list, Plane_lt>
       Map_planes;
-#endif
 
     Map_planes M;
     SHalfedge_iterator e;

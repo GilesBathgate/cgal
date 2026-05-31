@@ -333,9 +333,6 @@ void divide_segment_by_plane( Segment_3 s, Plane_3 pl,
 
 
 private:
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-  bool reference_counted;
-#endif
   Traits traits;
 
 
@@ -347,9 +344,6 @@ private:
 public:
   template<typename SNC_structure>
   K3_tree(SNC_structure* W)
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-    : reference_counted(false)
-#endif
     {
 
     typedef typename SNC_structure::Vertex_iterator Vertex_iterator;
@@ -385,11 +379,6 @@ public:
         bounding_box.extend((*vi)->point());
     //CGAL_NEF_TRACEN("bounding box:"<<objects_bbox);
 
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-    Point_3 p1(1,2,7), p2(p1);
-    reference_counted = (&(p1.hx()) == &(p2.hx()));
-    CGAL_NEF_TRACEN("reference counted " << reference_counted);
-#endif
     non_efective_splits=0;
     root = build_kdtree(vertices, edges, facets, 0);
   }
@@ -519,11 +508,7 @@ Node_handle build_kdtree(Vertex_list& V, Halfedge_list& E, Halffacet_list& F,
   Point_3 point_on_plane = find_median_point(V, coord);
 //  CGAL_NEF_TRACEN("build_kdtree: plane: "<<partition_plane<< " " << point_on_plane);
 
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-  Side_of_plane sop(point_on_plane, coord, reference_counted);
-#else
   Side_of_plane sop(point_on_plane, coord);
-#endif
   sop.reserve(V.size());
 
   Vertex_list V1,V2;

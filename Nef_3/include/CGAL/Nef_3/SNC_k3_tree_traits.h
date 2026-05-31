@@ -73,28 +73,17 @@ class Side_of_plane {
 
   typedef typename SNC_decorator::Kernel Kernel;
   typedef typename Kernel::Point_3 Point_3;
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-  typedef typename Kernel::RT RT;
-#endif
   typedef Compare_points<Kernel, int> Compare;
   static constexpr Oriented_side unknown_side = static_cast<Oriented_side>(-2);
 
 public:
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-  Side_of_plane(const Point_3& p, int c, bool rc = false) : reference_counted(rc), coord(c), pop(p) {}
-#else
   Side_of_plane(const Point_3& p, int c) : OnSideMap(unknown_side), coord(c), pop(p) {}
-#endif
   void reserve(std::size_t n) { OnSideMap.reserve(n); }
   Oriented_side operator()(Vertex_handle v);
   Oriented_side operator()(Halfedge_handle e);
   Oriented_side operator()(Halffacet_handle f);
 private:
   Unique_hash_map<Vertex_handle,Oriented_side> OnSideMap;
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-  Unique_hash_map<const RT*, Oriented_side> OnSideMapRC;
-  bool reference_counted;
-#endif
   int coord;
   const Point_3 pop;
 };
@@ -146,30 +135,6 @@ template <class SNC_decorator>
 Oriented_side
 Side_of_plane<SNC_decorator>::operator()(Vertex_handle v) {
 Comparison_result cr;
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-  if(reference_counted) {
-    if(!OnSideMapRC.is_defined(&(v->point().hw())))
-      switch(coord) {
-      case 0:
-        cr = CGAL::compare_x(v->point(), pop);
-        OnSideMapRC[&(v->point().hw())] = cr == LARGER ? ON_POSITIVE_SIDE :
-                         cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
-        break;
-      case 1:
-        cr = CGAL::compare_y(v->point(), pop);
-        OnSideMapRC[&(v->point().hw())] = cr == LARGER ? ON_POSITIVE_SIDE :
-                         cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
-        break;
-      case 2:
-        cr = CGAL::compare_z(v->point(), pop);
-        OnSideMapRC[&(v->point().hw())] = cr == LARGER ? ON_POSITIVE_SIDE :
-                         cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
-        break;
-      default: CGAL_error_msg( "wrong value");
-      }
-    return OnSideMapRC[&(v->point().hw())];
-  } else {
-#endif
   Oriented_side& side = OnSideMap[v];
   if(side == unknown_side) {
     Compare compare(coord);
@@ -178,9 +143,6 @@ Comparison_result cr;
            cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
   }
   return side;
-#ifdef CGAL_NEF_EXPLOIT_REFERENCE_COUNTING
-  }
-#endif
 }
 
 /*
