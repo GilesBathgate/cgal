@@ -79,9 +79,84 @@ class Side_of_plane {
 public:
   Side_of_plane(const Point_3& p, int c) : OnSideMap(unknown_side), coord(c), pop(p) {}
   void reserve(std::size_t n) { OnSideMap.reserve(n); }
-  Oriented_side operator()(Vertex_handle v);
-  Oriented_side operator()(Halfedge_handle e);
-  Oriented_side operator()(Halffacet_handle f);
+
+  Oriented_side operator()(Vertex_handle v) {
+  Comparison_result cr;
+    Oriented_side& side = OnSideMap[v];
+    if(side == unknown_side) {
+      Compare compare(coord);
+      cr = compare(v->point(), pop);
+      side = cr == LARGER ? ON_POSITIVE_SIDE :
+             cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
+    }
+    return side;
+  }
+
+  /*
+   An edge is considered intersecting a plane if its endpoints lie on the
+   plane or if they lie on different sides.  Partial tangency is not considered
+   as intersection, due the fact that a lower dimensional face (the vertex)
+   should be already reported as an object intersecting the plane.
+  */
+  Oriented_side operator()(Halfedge_handle e) {
+    Vertex_handle v = e->source();
+    Vertex_handle vt = e->twin()->source();
+
+    Oriented_side src_side = (*this) (v);
+    Oriented_side tgt_side = (*this) (vt);
+    if( src_side == tgt_side)
+      return src_side;
+    if( src_side == ON_ORIENTED_BOUNDARY)
+      return tgt_side;
+    if( tgt_side == ON_ORIENTED_BOUNDARY)
+      return src_side;
+    return ON_ORIENTED_BOUNDARY;
+  }
+
+  /*
+   As for the edges, if a facet is tangent to the plane it is not considered as
+   a intersection since lower dimensional faces, like the edges and vertices
+   where the tangency occurs, should be reported as the objects intersecting
+   the plane.
+   A valid flat facet requires only three vertices to establish coplanarity.
+   However, to safely handle arbitrary or degenerate topologies, the loop
+   completely traverses the cycle so the intersection is known as far as two
+   vertices are located on different sides of the plane.
+  */
+  Oriented_side operator()(Halffacet_handle f) {
+      CGAL_assertion( std::distance( f->facet_cycles_begin(), f->facet_cycles_end()) > 0);
+
+    Halffacet_cycle_iterator fc(f->facet_cycles_begin());
+    SHalfedge_handle e;
+    CGAL_assertion(fc.is_shalfedge());
+    e = SHalfedge_handle(fc);
+    SHalfedge_around_facet_circulator sc(e), send(sc);
+    //CGAL_assertion( iterator_distance( sc, send) >= 3); // TODO: facet with 2 vertices was found, is it possible?
+
+    Oriented_side facet_side;
+    Vertex_handle v;
+    do {
+      v = sc->source()->center_vertex();
+      facet_side = (*this) (v);
+      ++sc;
+    }
+    while( facet_side == ON_ORIENTED_BOUNDARY && sc != send);
+    if( facet_side == ON_ORIENTED_BOUNDARY)
+      return ON_ORIENTED_BOUNDARY;
+    CGAL_assertion( facet_side != ON_ORIENTED_BOUNDARY);
+    Oriented_side point_side;
+    while( sc != send) {
+      v = sc->source()->center_vertex();
+      point_side = (*this) (v);
+      ++sc;
+      if( point_side == ON_ORIENTED_BOUNDARY)
+        continue;
+      if( point_side != facet_side)
+        return ON_ORIENTED_BOUNDARY;
+    }
+    return facet_side;
+    //#endif
+  }
 private:
   Unique_hash_map<Vertex_handle,Oriented_side> OnSideMap;
   int coord;
@@ -130,94 +205,6 @@ public:
   }
 
 };
-
-template <class SNC_decorator>
-Oriented_side
-Side_of_plane<SNC_decorator>::operator()(Vertex_handle v) {
-Comparison_result cr;
-  Oriented_side& side = OnSideMap[v];
-  if(side == unknown_side) {
-    Compare compare(coord);
-    cr = compare(v->point(), pop);
-    side = cr == LARGER ? ON_POSITIVE_SIDE :
-           cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
-  }
-  return side;
-}
-
-/*
-   An edge is considered intersecting a plane if its endpoints lie on the
-   plane or if they lie on different sides.  Partial tangency is not considered
-   as intersection, due the fact that a lower dimensional face (the vertex)
-   should be already reported as an object intersecting the plane.
- */
-
-template <class SNC_decorator>
-Oriented_side
-Side_of_plane<SNC_decorator>::operator()(Halfedge_handle e) {
-  Vertex_handle v = e->source();
-  Vertex_handle vt = e->twin()->source();
-
-  Oriented_side src_side = (*this) (v);
-  Oriented_side tgt_side = (*this) (vt);
-  if( src_side == tgt_side)
-    return src_side;
-  if( src_side == ON_ORIENTED_BOUNDARY)
-    return tgt_side;
-  if( tgt_side == ON_ORIENTED_BOUNDARY)
-    return src_side;
-  return ON_ORIENTED_BOUNDARY;
-}
-
-
-/*
-   As for the edges, if a facet is tangent to the plane it is not considered as
-   a intersection since lower dimensional faces, like the edges and vertices
-   where the tangency occurs, should be reported as the objects intersecting
-   the plane.
-   So, an intersection is reported if all vertices of the facet lie on plane,
-   for which it is only necessary to check three vertices, or if the facet
-   has vertices on both sides of the plane, so the intersection is known
-   as far as two vertices located on different sides of the plane.
-*/
-
-
-template <class SNC_decorator>
-Oriented_side
-Side_of_plane<SNC_decorator>::operator()(Halffacet_handle f) {
-    CGAL_assertion( std::distance( f->facet_cycles_begin(), f->facet_cycles_end()) > 0);
-
-  Halffacet_cycle_iterator fc(f->facet_cycles_begin());
-  SHalfedge_handle e;
-  CGAL_assertion(fc.is_shalfedge());
-  e = SHalfedge_handle(fc);
-  SHalfedge_around_facet_circulator sc(e), send(sc);
-  //CGAL_assertion( iterator_distance( sc, send) >= 3); // TODO: facet with 2 vertices was found, is it possible?
-
-  Oriented_side facet_side;
-  Vertex_handle v;
-  do {
-    v = sc->source()->center_vertex();
-    facet_side = (*this) (v);
-    ++sc;
-  }
-  while( facet_side == ON_ORIENTED_BOUNDARY && sc != send);
-  if( facet_side == ON_ORIENTED_BOUNDARY)
-    return ON_ORIENTED_BOUNDARY;
-  CGAL_assertion( facet_side != ON_ORIENTED_BOUNDARY);
-  Oriented_side point_side;
-  while( sc != send) {
-    v = sc->source()->center_vertex();
-    point_side = (*this) (v);
-    ++sc;
-    if( point_side == ON_ORIENTED_BOUNDARY)
-      continue;
-    if( point_side != facet_side)
-      return ON_ORIENTED_BOUNDARY;
-  }
-  return facet_side;
-  //#endif
-}
 
 } //namespace CGAL
 
