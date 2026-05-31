@@ -27,35 +27,6 @@
 
 namespace CGAL {
 
-
-template <typename Kernel, typename Coordinate>
-class Compare_points {
-
-  typedef typename Kernel::Point_3  Point_3;
- public:
-  Compare_points(Coordinate c) : coord(c) {
-    CGAL_assertion( c >= 0 && c <=2);
-  }
-  CGAL::Comparison_result operator()(const Point_3& p1, const Point_3& p2) {
-    switch(coord) {
-    case 0:
-      CGAL_NEF_TRACEN("compare_x " << p1 << ", " << p2 << "=" << (int) CGAL::compare_x(p1, p2));
-      return CGAL::compare_x(p1, p2);
-    case 1:
-      CGAL_NEF_TRACEN("compare_y " << p1 << ", " << p2 << "=" << (int) CGAL::compare_y(p1, p2));
-      return CGAL::compare_y(p1, p2);
-    case 2:
-      CGAL_NEF_TRACEN("compare_z " << p1 << ", " << p2 << "=" << (int) CGAL::compare_z(p1, p2));
-      return CGAL::compare_z(p1, p2);
-    default: CGAL_error();
-    }
-    return CGAL::EQUAL;
-  }
-private:
-  Coordinate coord;
-};
-
-
 template <class SNC_decorator>
 class Side_of_plane {
 
@@ -73,19 +44,23 @@ class Side_of_plane {
 
   typedef typename SNC_decorator::Kernel Kernel;
   typedef typename Kernel::Point_3 Point_3;
-  typedef Compare_points<Kernel, int> Compare;
+
   static constexpr Oriented_side unknown_side = static_cast<Oriented_side>(-2);
 
 public:
-  Side_of_plane(const Point_3& p, int c) : OnSideMap(unknown_side), coord(c), pop(p) {}
+  Side_of_plane(const Point_3& p, int c) : OnSideMap(unknown_side), coord(c), pop(p) {
+    CGAL_assertion( c >= 0 && c <= 2 );
+  }
   void reserve(std::size_t n) { OnSideMap.reserve(n); }
 
   Oriented_side operator()(Vertex_handle v) {
   Comparison_result cr;
     Oriented_side& side = OnSideMap[v];
     if(side == unknown_side) {
-      Compare compare(coord);
-      cr = compare(v->point(), pop);
+      cr = (coord == 0) ? CGAL::compare_x(v->point(), pop) :
+           (coord == 1) ? CGAL::compare_y(v->point(), pop) :
+         /*(coord == 2)*/ CGAL::compare_z(v->point(), pop);
+
       side = cr == LARGER ? ON_POSITIVE_SIDE :
              cr == SMALLER ? ON_NEGATIVE_SIDE : ON_ORIENTED_BOUNDARY;
     }
