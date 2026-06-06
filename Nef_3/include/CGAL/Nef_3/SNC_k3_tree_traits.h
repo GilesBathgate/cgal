@@ -74,10 +74,10 @@ public:
    should be already reported as an object intersecting the plane.
   */
   Oriented_side operator()(Halfedge_handle e) {
-    Vertex_handle v = e->source();
+    Vertex_handle vs = e->source();
     Vertex_handle vt = e->twin()->source();
 
-    Oriented_side src_side = (*this) (v);
+    Oriented_side src_side = (*this) (vs);
     Oriented_side tgt_side = (*this) (vt);
     if( src_side == tgt_side)
       return src_side;
@@ -99,38 +99,40 @@ public:
    vertices are located on different sides of the plane.
   */
   Oriented_side operator()(Halffacet_handle f) {
-      CGAL_assertion( std::distance( f->facet_cycles_begin(), f->facet_cycles_end()) > 0);
+    CGAL_assertion(f->facet_cycles_begin() != f->facet_cycles_end());
 
     Halffacet_cycle_iterator fc(f->facet_cycles_begin());
-    SHalfedge_handle e;
     CGAL_assertion(fc.is_shalfedge());
-    e = SHalfedge_handle(fc);
+    SHalfedge_handle e(fc);
     SHalfedge_around_facet_circulator sc(e), send(sc);
     //CGAL_assertion( iterator_distance( sc, send) >= 3); // TODO: facet with 2 vertices was found, is it possible?
 
+    bool all_on_boundary = true;
     Oriented_side facet_side;
-    Vertex_handle v;
     do {
-      v = sc->source()->center_vertex();
-      facet_side = (*this) (v);
+      const Vertex_handle& v = sc->source()->center_vertex();
+      facet_side = (*this)(v);
+      if (facet_side != ON_ORIENTED_BOUNDARY) {
+        all_on_boundary = false;
+        break;
+      }
       ++sc;
-    }
-    while( facet_side == ON_ORIENTED_BOUNDARY && sc != send);
-    if( facet_side == ON_ORIENTED_BOUNDARY)
+    } while (sc != send);
+
+    if (all_on_boundary)
       return ON_ORIENTED_BOUNDARY;
     CGAL_assertion( facet_side != ON_ORIENTED_BOUNDARY);
     Oriented_side point_side;
-    while( sc != send) {
-      v = sc->source()->center_vertex();
-      point_side = (*this) (v);
-      ++sc;
-      if( point_side == ON_ORIENTED_BOUNDARY)
-        continue;
-      if( point_side != facet_side)
+    ++sc;
+    while (sc != send) {
+      const Vertex_handle& v = sc->source()->center_vertex();
+      point_side = (*this)(v);
+      if (point_side != ON_ORIENTED_BOUNDARY && point_side != facet_side)
         return ON_ORIENTED_BOUNDARY;
+      ++sc;
     }
+
     return facet_side;
-    //#endif
   }
 private:
   Unique_hash_map<Vertex_handle,Oriented_side> OnSideMap;
