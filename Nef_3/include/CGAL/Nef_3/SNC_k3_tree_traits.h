@@ -45,7 +45,7 @@ class Side_of_plane {
   typedef typename SNC_decorator::Kernel Kernel;
   typedef typename Kernel::Point_3 Point_3;
 
-  static constexpr Oriented_side unknown_side = static_cast<Oriented_side>(-2);
+  static inline constexpr Oriented_side unknown_side = static_cast<Oriented_side>(-2);
 
 public:
   Side_of_plane(const Point_3& p, int c) : OnSideMap(unknown_side), coord(c), pop(p) {
@@ -139,9 +139,6 @@ private:
   int coord;
   const Point_3 pop;
 };
-
-template <class SNC_decorator>
-constexpr Oriented_side Side_of_plane<SNC_decorator>::unknown_side;
 
 template <class Decorator>
 class SNC_k3_tree_traits {
